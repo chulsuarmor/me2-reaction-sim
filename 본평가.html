@@ -127,18 +127,13 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
 .g1 { display: grid; grid-template-columns: repeat(auto-fill, minmax(12em, 1fr)); gap: 6px 12px; }
 .g1 .w { display: flex; align-items: center; gap: 6px; }
 .g2 { display: grid; grid-template-columns: auto 1.4fr 1fr 1fr 1fr; gap: 4px 6px; align-items: center; text-align: center; }
-#g5 { display: grid; grid-template-columns: auto repeat(11, minmax(0, 1fr)); gap: 3px; align-items: center; text-align: center; }
-#g5 > * { grid-column: var(--c1); grid-row: var(--r1); }
+#g5 { display: grid; grid-template-columns: auto repeat(var(--n, 1), minmax(0, 4.5em)); justify-content: start; gap: 3px; align-items: center; text-align: center; }
+#g5 > * { grid-column: var(--c, 1); grid-row: var(--r, 1); }
+#g5 > [hidden] { display: none; }
 #g5 input { padding: 2px 1px; text-align: center; }
-#g5 .x2 { display: none; }
 #g5 .rl { line-height: 1.35; padding-right: 4px; }
-.tline { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
-.tline input { width: 5em; }
-@container sb (max-width: 600px) {
-  #g5 { grid-template-columns: auto repeat(6, minmax(0, 1fr)); row-gap: 3px; }
-  #g5 > * { grid-column: var(--c2); grid-row: var(--r2); }
-  #g5 .x2 { display: block; }
-}
+.tline { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.tline input { width: 3.6em; }
 .syms { display: flex; gap: 6px; }
 .syms button { min-width: 44px; padding: 0 8px; background: var(--tint); border-color: var(--tint2); color: var(--pri2); font-weight: 700; box-shadow: none; }
 .stk { position: sticky; top: 0; z-index: 1; background: #fff; }
@@ -204,8 +199,8 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
 .dlg .row button { flex: 1; min-height: 56px; font-size: 1.15em; font-weight: 700; }
 .dlg > button { min-height: 48px; }
 .cfn { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px 12px; }
-.cfn span { padding: 2px 10px; border: 1px solid var(--line); border-radius: 999px; white-space: nowrap; background: var(--panel); text-align: center; }
-.cfn span.e { border-color: var(--red); background: #fff5f5; color: var(--mark); font-weight: 700; }
+.cfn button { padding: 2px 10px; border: 1px solid var(--line); border-radius: 999px; white-space: nowrap; background: var(--panel); text-align: center; box-shadow: none; }
+.cfn button.e { border-color: var(--red); background: #fff5f5; color: var(--mark); font-weight: 700; }
 .warn { font-weight: 700; color: var(--mark); }
 #done { max-width: 34em; margin: 10vh auto 0; padding: 28px 32px; border: 1px solid var(--line); border-radius: 18px; background: #fff; text-align: center; box-shadow: var(--sh2); }
 #done h2 { display: inline-block; font-size: 1.6em; color: var(--go); background: #e6fcf5; border: 1px solid #96f2d7; border-radius: 999px; padding: 2px 24px; margin: 0 0 16px; }
@@ -225,6 +220,7 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
   #rend { min-height: 44px; }
   .prog { margin-top: 2px; }
   #logwrap { height: 8.8em; }
+  #lab.s2 #logwrap { height: 6.4em; }
 }
 @media (max-height: 620px) {
   #lab { padding: 4px 16px 1px; }
@@ -236,7 +232,8 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
   .ap .abtn ~ .abtn { margin-top: 1px; }
   #logwrap { height: 7.5em; }
   #lab.s4 #logwrap { height: 4.6em; }
-  #lab.s2 #logwrap { height: 5.6em; }
+  #lab.s2 #logwrap { height: 4.6em; }
+  #lab.s4 #g4n { line-height: 1.1; }
 }
 @media (max-height: 609px) {
   #lab { padding-top: 2px; padding-bottom: 0; row-gap: 3px; }
@@ -249,8 +246,36 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
   #boxwrap { aspect-ratio: 1000 / 348; }
   #figs .legend { gap: 0 0.6em; line-height: 1.15; }
   #figs .notes { padding-top: 0; padding-bottom: 0; line-height: 1.15; }
+  #lab.s4 #g4n { line-height: 1; }
 }
 @media (max-height: 609px) and (max-width: 1320px) { #boxwrap { aspect-ratio: 1000 / 356; } }
+#sbody { background: linear-gradient(rgba(255,255,255,0), #fff 70%) 0 100% / 100% 28px no-repeat local, linear-gradient(rgba(16,24,40,0), rgba(16,24,40,.13)) 0 100% / 100% 14px no-repeat scroll, #fff; }
+#more { flex: none; margin: -3px 0; padding: 0 12px; border-radius: 8px; background: var(--tint); color: var(--pri2); font-weight: 700; line-height: 1.25; text-align: center; white-space: nowrap; }
+#gt { font-size: max(22px, 1em); }
+#g4n .nw { display: inline-block; }
+@media (max-height: 740px) { .sec[data-s="5"] { gap: 3px; } .sec[data-s="5"] .ask + .ask { margin-top: 0; } }
+#more[hidden], #pre[hidden] { display: none; }
+#pre { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: max-content; max-width: 94%; margin: 0; padding: 2px 12px; border: 1px solid var(--tint2); border-radius: 10px; background: #fff; color: var(--pri2); font-weight: 700; text-align: center; }
+#g4n { display: none; }
+#g4n p { margin: 0; color: var(--ink); }
+#g4n .t { font-weight: 700; }
+#g4n .ind { padding-left: 1.2em; }
+#lab.s4:not(.calcon) #g4n { display: block; }
+#lab.s4 #figs > :is(#boxwrap, .legend, #histh, #histwrap, .notes:not(#g4n)), #lab.s5 #figs > :is(#histh, #histwrap, .notes) { display: none; }
+#lab.s45.calcon #figs > :not(#calc, #lh, #logwrap) { display: none; }
+#lab.s45.calcon #figs > #lh, #lab.s45.calcon #figs > #logwrap { visibility: visible; }
+#lab.s45 #calc { position: static; flex: none; order: -1; }
+#lab.s45 #logwrap { flex: 1 1 0; height: auto; min-height: 0; }
+#lab.s45 #log th, #lab.s45 #log td { padding: 0 3px; }
+#figs > #lh { margin: 0; }
+.pick .lab { flex-basis: 100%; }
+.pick button { padding: 4px 10px; }
+.stk { box-shadow: 0 1px 0 var(--line), 0 4px 6px -4px rgba(16,24,40,.12); }
+.g1 { align-items: end; }
+#start h2 label { display: inline; margin: 0; color: inherit; }
+#s1 .note { margin: 14px 0 0; }
+.rnote { margin: 0; color: var(--sub); }
+@media (max-height: 620px) { #histwrap { min-height: 3.4em; } }
 </style>
 </head>
 <body>
@@ -259,10 +284,10 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
 <section id="start">
   <div id="gate" hidden><h2 id="gh"></h2><p id="gt"></p></div>
   <div id="s1">
-    <h2>학번 입력</h2>
-    <label for="sid">학번</label>
+    <h2><label for="sid">학번 입력</label></h2>
     <input id="sid" autocomplete="off" spellcheck="false" autofocus>
     <div class="row"><button id="go" type="button">확인</button><span id="msg"></span></div>
+    <p class="note">· 시간 20분<br>· 창이 꺼지면 같은 PC · 같은 링크 · 같은 학번으로 다시 들어가면 이어짐</p>
   </div>
   <div id="s2" hidden>
     <h2>학번 확인</h2>
@@ -312,13 +337,28 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
   <section id="figs">
     <div id="boxwrap"><canvas id="box"></canvas></div>
     <div class="legend"><span><span class="dot" style="background:var(--a)"></span>A 공급구로 들어옴</span><span><span class="dot" style="background:var(--b)"></span>B 회수 탱크로</span><span id="cond"></span><span id="scene"></span></div>
-    <h2>충돌 에너지 분포 (A끼리 충돌 · 가로 kJ/mol · 세로 충돌 수)</h2>
-    <div id="histwrap"><canvas id="hist"></canvas></div>
+    <h2 id="histh">충돌 에너지 분포 (A끼리 충돌 · 가로 kJ/mol · 세로 충돌 수)</h2>
+    <div id="histwrap"><canvas id="hist"></canvas><p id="pre" class="note" hidden>· 온도 · 촉매를 고르고 「실험하기」 → 반응기 장면 · 충돌 그래프가 나옴</p></div>
     <div class="card notes">
       <div class="note">전체 충돌 = A 끼리 부딪친 횟수 · 유효 충돌 = 그중 B 를 만든 충돌</div>
       <div class="note">생성물 비율 = 회수한 B ÷ (반응기 A 100 + 회수한 B)</div>
       <div class="note">기준 온도 = 촉매 없음 · 있음 비교 · 속도 증가비 구하는 온도</div>
       <div class="note">충돌 수 · 회수한 B = 관찰 시간 동안 센 값</div>
+    </div>
+    <div class="card notes" id="g4n">
+      <p class="t">쓸 수 있는 식</p>
+      <p>· 생성물 비율 = 회수한 B ÷ <span class="nw">(반응기 A 100 + 회수한 B)</span></p>
+      <p>· 유효 충돌 몫 = 유효 충돌 ÷ 전체 충돌</p>
+      <p>· ΔS전체 = ΔS계 + ΔS주위</p>
+      <p>· 이 밖에 교육과정 밖 식을 쓰면 유의사항 1)에 따라 0점</p>
+      <p class="ind"><span class="nw">(아레니우스 식 · 깁스 에너지 식 등)</span></p>
+      <p>· 속도 증가비 = <span class="nw">(촉매 있음 값)</span> ÷ <span class="nw">(촉매 없음 값)</span></p>
+      <p class="ind">같은 온도 · 같은 관찰 시간</p>
+      <p class="ind">값 = 회수한 B 또는 유효 충돌 몫</p>
+      <p>· 또는 속도 증가비 = 한 번의 실행에서</p>
+      <p class="ind"><span class="nw">(Ea(촉매 있음)보다 큰 충돌 수)</span></p>
+      <p class="ind"><span class="nw">÷ (Ea(촉매 없음)보다 큰 충돌 수)</span></p>
+      <p>· 계산은 화면 오른쪽 위 <span class="nw">「계산기」만(손 계산도 됨)</span> · 휴대폰 · PC 계산기 안 씀</p>
     </div>
     <div id="calc" hidden>
       <div class="crow"><span class="note">④ 결과 · 목록 숫자를 누르면 들어감</span><button id="cclose" type="button">닫기</button></div>
@@ -334,6 +374,7 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
         <div class="sec" data-s="1">
           <h2>[1] 반응 조건</h2>
           <p class="ask">화면 ① 반응 정보의 값을 그대로 적음</p>
+          <p class="ask">· 되돌리기 = 한 걸음 뒤로 · 되살리기 = 다시 앞으로</p>
           <div class="g1">
             <div><label for="f-dH">반응 엔탈피 ΔH</label><div class="w"><input id="f-dH" data-f="s1.dH"><span class="u">kJ/mol</span></div></div>
             <div><label for="f-EaN">활성화 에너지 Ea(촉매 없음)</label><div class="w"><input id="f-EaN" data-f="s1.EaN"><span class="u">kJ/mol</span></div></div>
@@ -346,6 +387,7 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
         <div class="sec" data-s="2" hidden>
           <h2>[2] 기준 온도 측정값</h2>
           <p class="ask">기준 온도에서 「실험하기」 뒤 화면 ④ 결과 칸의 값을 적음</p>
+          <p class="ask">· 촉매 없음 · 촉매 있음 둘 다 「실험하기」 → 각 줄에 적음</p>
           <div class="g2">
             <span></span><span class="lab">전체 충돌</span><span class="lab">유효 충돌</span><span class="lab">회수한 B</span><span class="lab">생성물 비율</span>
             <span class="lab">촉매 없음</span><input data-f="s2.no.aa" aria-label="촉매 없음 전체 충돌"><input data-f="s2.no.eff" aria-label="촉매 없음 유효 충돌"><input data-f="s2.no.nB" aria-label="촉매 없음 회수한 B"><input data-f="s2.no.ratio" aria-label="촉매 없음 생성물 비율">
@@ -380,7 +422,7 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
           <h2>[5] 최저 온도 찾기</h2>
           <p class="ask">목표 생성물 비율을 얻는 최저 온도를 촉매 없음 · 있음 각각 찾으시오.</p>
           <p class="ask">· 최저 온도: 화면 생성물 비율이 목표 이상이 처음 되는 온도</p>
-          <p class="ask">· 해 본 온도 칸에만 화면 생성물 비율을 적음</p>
+          <p class="ask">· 칸 = 실험한 온도의 화면 생성물 비율(두 줄 모두 적음)</p><p class="ask">· 흐린 칸 = 아직 실험 안 한 온도 · 그 조건으로 「실험하기」 하면 열림</p>
           <div id="g5"></div>
           <div class="tline"><span class="lab">최저 온도</span><label for="f-tminN">촉매 없음</label><input id="f-tminN" data-f="s5.tminN"><span class="u">K</span><label for="f-tminC">촉매 있음</label><input id="f-tminC" data-f="s5.tminC"><span class="u">K</span></div>
         </div>
@@ -394,10 +436,11 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
           <textarea id="f-da" data-f="s6.da"></textarea>
         </div>
       </div>
-      <div class="foot"><button type="button" id="prev">◀ 이전</button><button type="button" id="next">다음 ▶</button><span class="sp"></span><button type="button" id="undo">되돌리기</button><button type="button" id="again">다시 하기</button><button type="button" id="sub">제출</button></div>
+      <p id="more" hidden>▼ 아래에 칸 더 있음</p>
+      <div class="foot"><button type="button" id="prev">◀ 이전</button><button type="button" id="next">다음 ▶</button><span class="sp"></span><button type="button" id="undo" title="Ctrl+Z">되돌리기</button><button type="button" id="again" title="Ctrl+Y">되살리기</button><button type="button" id="sub">제출</button></div>
     </div>
     </div>
-    <h2 class="lh">지금까지 한 실험</h2>
+    <h2 class="lh" id="lh">지금까지 한 실험</h2>
     <div id="logwrap"><table id="log"><thead><tr><th>온도</th><th>촉매</th><th>전체 충돌</th><th>유효 충돌</th><th>회수한 B</th><th>생성물 비율</th></tr></thead><tbody id="logb"></tbody></table></div>
   </section>
 </main>
@@ -409,6 +452,7 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
 <div id="cf" class="ovl" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="cfh">
   <h2 id="cfh">제출 확인</h2>
   <div class="cfn" id="cfn"></div>
+  <p class="note">· 「[1] 빈 칸 …」 단추를 누르면 그 절의 빈 칸으로 감</p>
   <p class="warn">· 빈 칸이 있어도 제출됨<br>· 제출하면 고칠 수 없음</p>
   <div class="row"><button type="button" id="cfback">돌아가서 더 쓰기</button><button type="button" id="cfgo" class="go">제출하기</button></div>
 </div></div>
@@ -719,7 +763,8 @@ window.RxCalc = function () {
 (function () {
 const M = window.RxModel, $ = id => document.getElementById(id), PRACTICE = window.ME2_MODE === 'practice';
 const SELFTEST = /[?&]selftest=1/.test(location.search);
-const SLOW = 0.041, FAST = 4 * SLOW, CANVAS_FONT = 18, AUTO_MS = 8000;
+const SLOW = 0.041, FAST = 4 * SLOW, AUTO_MS = 8000;
+let CANVAS_FONT = 18;
 const ML = 90, MT = 48, GAP = 80, TW = 100, LW = ML + M.W + GAP + TW + 10, LH = MT + M.H + 10;
 const OUT_Y = (M.INLET[0] + M.INLET[1]) / 2, TANK_FULL = 200;
 const combos = COMBOS.map(a => ({ EaN: a[0], EaC: a[1], dH: a[2], target: a[3], tObs: a[4], Tref: a[5] }));
@@ -782,14 +827,17 @@ const box = $('box'), bx = box.getContext('2d'), hc = $('hist'), hx = hc.getCont
 let sc = 1, ox = 0, oy = 0;
 function fit() {
   const dpr = Math.min(2, window.devicePixelRatio || 1);
+  CANVAS_FONT = Math.max(18, Math.round(parseFloat(getComputedStyle(document.body).fontSize))); window.__sim.CANVAS_FONT = CANVAS_FONT;
   for (const c of [box, hc]) { const w = c.clientWidth, h = c.clientHeight; if (w && h) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); c.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0); } }
-  sc = Math.min(box.clientWidth / LW, box.clientHeight / LH); ox = (box.clientWidth - LW * sc) / 2; oy = (box.clientHeight - LH * sc) / 2;
-  if (s) { paint(); hist(); }
+  const bh = box.clientHeight, top = CANVAS_FONT + 8;
+  sc = Math.max(0, Math.min(box.clientWidth / LW, bh / LH, (bh - top) / (LH - MT))); ox = (box.clientWidth - LW * sc) / 2; oy = Math.max((bh - LH * sc) / 2, top - MT * sc);
+  paint(); hist();
 }
 const PX = x => ox + (ML + x) * sc, PY = y => oy + (MT + M.H - y) * sc;
-function text(g, key, t, x, y, align, base) {
+function text(g, key, t, x, y, align, base, bg) {
   const w = g.measureText(t).width, cw = g.canvas.clientWidth, ch = g.canvas.clientHeight;
   const x0 = Math.max(0, Math.min(cw - w, align === 'center' ? x - w / 2 : align === 'right' ? x - w : x)), y0 = Math.max(0, Math.min(ch - CANVAS_FONT, base === 'middle' ? y - CANVAS_FONT / 2 : base === 'bottom' ? y - CANVAS_FONT : y));
+  if (bg) { const f = g.fillStyle; g.fillStyle = bg; g.fillRect(x0 - 3, y0 - 1, w + 6, CANVAS_FONT + 2); g.fillStyle = f; }
   g.textAlign = 'left'; g.textBaseline = 'top'; g.fillText(t, x0, y0);
   drawn[key] = { t, x0, x1: x0 + w, y0, y1: y0 + CANVAS_FONT, cw, ch };
 }
@@ -799,15 +847,15 @@ function arrow(x0, y, x1, col) {
 }
 function paint() {
   const w = box.clientWidth, h = box.clientHeight, s = sv; bx.clearRect(0, 0, w, h);
-  if (!s || !w) return;
-  const t = s.done ? s.now : tShow, r = M.R * sc, X0 = PX(0), Y0 = PY(M.H), BW = M.W * sc, BH = M.H * sc;
+  if (!w) return;
+  const t = !s ? 0 : s.done ? s.now : tShow, r = M.R * sc, X0 = PX(0), Y0 = PY(M.H), BW = M.W * sc, BH = M.H * sc;
   bx.font = CANVAS_FONT + 'px "Malgun Gothic",sans-serif'; bx.fillStyle = '#46505e';
   arrow(ox + 10 * sc, PY(OUT_Y), X0 - 4, '#2f6fd0');
   bx.fillStyle = '#2f6fd0'; text(bx, 'inlet', '공급구', 0, Y0 - 4, 'left', 'bottom');
-  const TX = PX(M.W + GAP), TY = Y0, TH = BH, tl = '회수 탱크 · B ' + s.nB + '개', tlw = bx.measureText(tl).width, ow = bx.measureText('회수구').width;
+  const TX = PX(M.W + GAP), TY = Y0, TH = BH, tl = s ? '회수 탱크 · B ' + s.nB + '개' : '회수 탱크', tlw = bx.measureText(tl).width, ow = bx.measureText('회수구').width;
   arrow(X0 + BW + 4, PY(OUT_Y), TX - 4, '#e07b1a');
   bx.fillStyle = '#9a4f0c'; text(bx, 'outlet', '회수구', Math.min(X0 + BW + GAP * sc / 2 + ow / 2, w - tlw - 12), Y0 - 4, 'right', 'bottom');
-  const lv = Math.min(1, s.nB / TANK_FULL) * TH;
+  const lv = s ? Math.min(1, s.nB / TANK_FULL) * TH : 0;
   bx.fillStyle = 'rgba(224,123,26,0.55)'; bx.fillRect(TX, TY + TH - lv, TW * sc, lv);
   bx.strokeStyle = '#5b6675'; bx.lineWidth = 2; bx.strokeRect(TX, TY, TW * sc, TH);
   bx.fillStyle = '#1d2430'; text(bx, 'tank', tl, w, Y0 - 4, 'right', 'bottom');
@@ -815,6 +863,7 @@ function paint() {
   window.__sim.geom = { frame: [X0, Y0, BW, BH], wall: [PX(0), PY(M.H), M.W * sc, M.H * sc], sc };
   bx.lineWidth = 5; bx.strokeStyle = '#2f6fd0'; bx.beginPath(); bx.moveTo(X0, PY(M.INLET[0])); bx.lineTo(X0, PY(M.INLET[1])); bx.stroke();
   bx.strokeStyle = '#e07b1a'; bx.beginPath(); bx.moveTo(X0 + BW, PY(OUT_Y - 20)); bx.lineTo(X0 + BW, PY(OUT_Y + 20)); bx.stroke();
+  if (!s) return;
   M.positions(s, t, pos);
   bx.beginPath();
   for (let i = 0; i < M.NA; i++) { const x = PX(pos[2 * i]), y = PY(pos[2 * i + 1]); bx.moveTo(x + r, y); bx.arc(x, y, r, 0, 6.2832); }
@@ -838,7 +887,8 @@ function stats() {
   put('o-aa', () => fmt(s.aa)); put('o-eff', () => fmt(s.nB)); put('o-na', () => M.NA); put('o-nb', () => fmt(s.nB)); put('o-r', () => M.ratioStr(s.nB));
   $('rcond').textContent = !s ? '· 온도를 고르고 「실험하기」' : got ? s.T + ' K · 촉매 ' + (s.cat ? '있음' : '없음')
     : finishing ? '계산 중' : fresh ? '· 새 조건 · 「실험하기」 누름' : sv.done ? '· 장면 끝 · 값은 「실험하기」 로' : '· 장면 보는 중 · 값은 「실험하기」 로';
-  $('scene').textContent = scene ? '장면 ' + tShow.toFixed(1) + ' / ' + sv.tObs + ' 초 · B ' + fmt(sv.nB) + '개' : '';
+  $('scene').textContent = scene ? '장면 ' + tShow.toFixed(1) + ' / ' + sv.tObs + ' 초 · 장면 속 B ' + fmt(sv.nB) + '개(기록 값은 ④)' : '';
+  $('pre').hidden = got || log.size > 0 || tShow > 0;
   $('tail').textContent = got ? 'Ea(촉매 없음)보다 큰 충돌 수 ' + fmt(s.qN) + '회 · Ea(촉매 있음)보다 큰 충돌 수 ' + fmt(s.qC) + '회' : '';
 }
 function record() {
@@ -857,28 +907,30 @@ function drawLog(nk) {
   const rows = [...log.entries()].sort((a, b) => a[1].cat - b[1].cat || a[1].T - b[1].T);
   $('logb').innerHTML = rows.length ? rows.map(([k, r], i) => '<tr class="' + (i && r.cat && !rows[i - 1][1].cat ? 'grp ' : '') + (k === nk ? 'new' : '') + '"><td>' + r.T + ' K</td><td>' + (r.cat ? '있음' : '없음') +
     '</td><td>' + fmt(r.aa) + '</td><td>' + fmt(r.nB) + '</td><td>' + fmt(r.nB) + '</td><td>' + M.ratioStr(r.nB) + '</td></tr>').join('') : '<tr><td colspan="6">실험하면 여기에 한 줄씩 남음</td></tr>';
+  g5cols(); more();
 }
 function hist() {
   const w = hc.clientWidth, h = hc.clientHeight, g = got ? s : sv; hx.clearRect(0, 0, w, h);
-  if (!g || !w) return;
+  if (!v || !w) return;
   hx.font = CANVAS_FONT + 'px "Malgun Gothic",sans-serif';
-  const xmax = Math.max(40, v.EaN + 6); let top = 1; for (let i = 0; i < xmax; i++) top = Math.max(top, g.hist[i]);
-  const L = hx.measureText(fmt(top)).width + 14, B = CANVAS_FONT + 10, pw = w - L - 12, ph = h - B - 8;
+  const xmax = Math.max(40, v.EaN + 6); let top = 1; if (g) for (let i = 0; i < xmax; i++) top = Math.max(top, g.hist[i]);
+  const L = (g ? hx.measureText(fmt(top)).width : 0) + 14, B = CANVAS_FONT + 10, pw = w - L - 12, ph = h - B - 8;
   const X = e => L + pw * e / xmax, Y = c => 8 + ph - ph * c / top;
   hx.fillStyle = 'rgba(176,58,46,0.10)'; hx.fillRect(X(v.EaN), 8, X(xmax) - X(v.EaN), ph);
   hx.fillStyle = 'rgba(31,95,191,0.10)'; hx.fillRect(X(v.EaC), 8, X(v.EaN) - X(v.EaC), ph);
   hx.fillStyle = '#5a7fb8';
-  for (let i = 0; i < xmax; i++) if (g.hist[i]) { const y = Y(g.hist[i]); hx.fillRect(X(i) + 0.5, y, Math.max(1, X(i + 1) - X(i) - 1), 8 + ph - y); }
+  if (g) for (let i = 0; i < xmax; i++) if (g.hist[i]) { const y = Y(g.hist[i]); hx.fillRect(X(i) + 0.5, y, Math.max(1, X(i + 1) - X(i) - 1), 8 + ph - y); }
   hx.strokeStyle = '#20262e'; hx.lineWidth = 2; hx.setLineDash([]); hx.beginPath(); hx.moveTo(L, 8); hx.lineTo(L, 8 + ph); hx.lineTo(L + pw, 8 + ph); hx.stroke();
   hx.fillStyle = '#46505e';
   for (let e = 0; e <= xmax; e += 10) text(hx, 'x' + e, String(e), X(e), 8 + ph + 4, 'center', 'top');
-  text(hx, 'ymax', fmt(top), L - 6, 8 + CANVAS_FONT / 2, 'right', 'middle');
+  if (g) text(hx, 'ymax', fmt(top), L - 6, 8 + CANVAS_FONT / 2, 'right', 'middle');
+  const ym = g ? drawn.ymax.x1 : L;
   for (const [e, col, dash, lab, al] of [[v.EaN, '#b03a2e', [], 'Ea(촉매 없음)', 'left'], [v.EaC, '#1f5fbf', [8, 6], 'Ea(촉매 있음)', 'right']]) {
     hx.strokeStyle = col; hx.lineWidth = 3; hx.setLineDash(dash); hx.beginPath(); hx.moveTo(X(e), 8); hx.lineTo(X(e), 8 + ph); hx.stroke(); hx.setLineDash([]);
-    const lw = hx.measureText(lab).width, low = al === 'right' && X(e) - 6 - lw < drawn.ymax.x1 + 12, side = low && X(e) - 6 - lw < L + 4 ? 'left' : al;
-    hx.fillStyle = col; text(hx, lab, lab, X(e) + (side === 'left' ? 6 : -6), low ? 10 + CANVAS_FONT + 8 : 10, side, 'top');
+    const lw = hx.measureText(lab).width, low = al === 'right' && X(e) - 6 - lw < ym + 12, side = low && X(e) - 6 - lw < L + 4 ? 'left' : al;
+    hx.fillStyle = col; text(hx, lab, lab, X(e) + (side === 'left' ? 6 : -6), low ? 10 + CANVAS_FONT + 8 : 10, side, 'top', '#fff');
   }
-  lastHist = g.aa;
+  if (g) lastHist = g.aa;
 }
 function frame(now) {
   const dt = Math.min(0.1, Math.max(0, (now - lastT) / 1000)); lastT = now;
@@ -1001,7 +1053,22 @@ function render() {
   for (const b of document.querySelectorAll('.abtn')) { const a = b.dataset.a; b.textContent = (sheet.s3.arrows[a] ? '✓ ' : '') + AN[a]; b.classList.toggle('on', !!pend && pend.a === a); }
   for (const b of document.querySelectorAll('.adel')) b.disabled = !sheet.s3.arrows[b.dataset.a];
   $('undo').disabled = hi <= 0; $('again').disabled = hi >= hs.length - 1;
-  hint(); drawGraph(); counts(); grow6();
+  hint(); drawGraph(); counts(); grow6(); g5cols(); more();
+}
+function more() { const sb = $('sbody'); $('more').hidden = !sb.clientHeight || sb.scrollHeight - sb.clientHeight - sb.scrollTop <= 2; }
+function g5cols() {
+  const g = $('g5'), on = new Set();
+  for (const r of log.values()) if (!PRACTICE || !r.cat) on.add((r.cat ? 'cat.' : 'no.') + r.T);
+  for (const k of PRACTICE ? ['no'] : ['no', 'cat']) for (const t of T5) if (filled(sheet.s5[k][t])) on.add(k + '.' + t);
+  const vis = T5.filter(t => on.has('no.' + t) || on.has('cat.' + t)), n = vis.length;
+  const nb = n > Math.max(1, Math.floor((g.clientWidth - 44) / 51)) ? 2 : 1, per = Math.max(1, Math.ceil(n / nb));
+  g.style.setProperty('--n', per);
+  for (const el of g.children) {
+    const d = el.dataset, f = d.f && d.f.split('.'), t = f ? f[2] : d.t, i = t ? vis.indexOf(t) : -1;
+    if (d.lb != null) { el.hidden = +d.lb >= nb; el.style.setProperty('--r', +d.lb * 3 + +d.row); continue; }
+    el.hidden = i < 0; if (f) el.disabled = !on.has(f[1] + '.' + t);
+    if (i >= 0) { el.style.setProperty('--c', i % per + 2); el.style.setProperty('--r', Math.floor(i / per) * 3 + +d.row); }
+  }
 }
 function grow6() {
   if (sec !== 6) return;
@@ -1023,16 +1090,17 @@ function showSec(i) {
   for (const el of document.querySelectorAll('.sec')) el.hidden = +el.dataset.s !== sec;
   [...$('tabs').children].forEach((b, k) => { b.classList.toggle('on', k + 1 === sec); b.setAttribute('aria-current', k + 1 === sec ? 'step' : 'false'); });
   $('lab').classList.toggle('nolog', sec === 1 || sec === 3 || sec === 6); $('lab').classList.toggle('s4', sec === 4); $('lab').classList.toggle('s2', sec === 2);
+  $('lab').classList.toggle('s5', sec === 5); $('lab').classList.toggle('s45', sec === 4 || sec === 5);
+  const lp = sec === 4 || sec === 5 ? $('figs') : document.querySelector('#lab .main'); if ($('logwrap').parentElement !== lp) lp.append($('lh'), $('logwrap'));
   $('prev').disabled = sec === 1; $('next').disabled = sec === 6; $('sbody').scrollTop = 0; render();
 }
 for (let i = 1; i <= 6; i++) { const b = document.createElement('button'); b.type = 'button'; b.innerHTML = '[' + i + '] <span class="n"></span>'; b.onclick = () => showSec(i); $('tabs').appendChild(b); }
 (function () {
-  const g = $('g5'), cell = (tag, cls, html, c1, r1, c2, r2) => { const el = document.createElement(tag); if (cls) el.className = cls; if (html) el.innerHTML = html; el.style.cssText = '--c1:' + c1 + ';--r1:' + r1 + ';--c2:' + c2 + ';--r2:' + r2; g.appendChild(el); return el; };
-  const at = i => [(i % 6) + 2, i < 6 ? 0 : 3];
-  for (const [blk, r0] of [[0, 0], [1, 3]]) { const x = blk ? ' x2' : ''; cell('span', 'lab' + x, '온도(K)', 1, 1, 1, r0 + 1); cell('span', 'lab rl' + x, '촉매<br>없음', 1, 2, 1, r0 + 2); if (!PRACTICE) cell('span', 'lab rl' + x, '촉매<br>있음', 1, 3, 1, r0 + 3); }
-  T5.forEach((t, i) => { const [c2, r0] = at(i); cell('span', 'lab', t, i + 2, 1, c2, r0 + 1); });
-  for (const [k, r, nm] of PRACTICE ? [['no', 2, '없음']] : [['no', 2, '없음'], ['cat', 3, '있음']]) T5.forEach((t, i) => {
-    const [c2, r0] = at(i), el = cell('input', '', '', i + 2, r, c2, r0 + r); el.dataset.f = 's5.' + k + '.' + t; el.setAttribute('aria-label', '촉매 ' + nm + ' ' + t + ' K 생성물 비율');
+  const g = $('g5'), cell = (tag, cls, html, d) => { const el = document.createElement(tag); if (cls) el.className = cls; if (html) el.innerHTML = html; Object.assign(el.dataset, d); g.appendChild(el); return el; };
+  for (const blk of [0, 1]) { cell('span', 'lab', '온도(K)', { lb: blk, row: 1 }); cell('span', 'lab rl', '촉매<br>없음', { lb: blk, row: 2 }); if (!PRACTICE) cell('span', 'lab rl', '촉매<br>있음', { lb: blk, row: 3 }); }
+  T5.forEach(t => cell('span', 'lab', t, { t, row: 1 }));
+  for (const [k, r, nm] of PRACTICE ? [['no', 2, '없음']] : [['no', 2, '없음'], ['cat', 3, '있음']]) T5.forEach(t => {
+    const el = cell('input', '', '', { f: 's5.' + k + '.' + t, row: r }); el.setAttribute('aria-label', '촉매 ' + nm + ' ' + t + ' K 생성물 비율');
   });
 })();
 for (const bar of document.querySelectorAll('.syms')) for (const t of bar.dataset.k.split(' ')) {
@@ -1052,7 +1120,8 @@ sh.addEventListener('focusin', e => {
   lastField = e.target; const el = e.target;
   requestAnimationFrame(() => keep(el));
 });
-new ResizeObserver(grow6).observe($('sbody'));
+new ResizeObserver(() => { grow6(); g5cols(); requestAnimationFrame(more); }).observe($('sbody'));
+$('sbody').addEventListener('scroll', more, { passive: true });
 sh.addEventListener('focusout', () => { lastKey = null; });
 sh.addEventListener('beforeinput', e => { if (/^insertFrom/.test(e.inputType)) { e.preventDefault(); note('붙여넣기 안 됨 · 직접 입력'); } });
 const block = e => { if (e.target.closest && e.target.closest('#sheet')) { e.preventDefault(); note('붙여넣기 안 됨 · 직접 입력'); } };
@@ -1080,16 +1149,16 @@ function ovl(id, on) {
   $('lab').inert = any; document.querySelector('header').inert = any;
 }
 function empties() {
-  const S = sheet, nb = o => Object.values(o).filter(x => !filled(x)).length, r5 = [...log.values()].filter(r => !PRACTICE || !r.cat);
+  const S = sheet, nb = o => Object.values(o).filter(x => !filled(x)).length;
   return [nb(S.s1), nb(S.s2.no) + nb(S.s2.cat), Object.values(S.s3.arrows).filter(a => !a || !filled(a.value)).length,
     (S.s4.basis.length ? 0 : 1) + ['formula', 'sub', 'ans'].filter(k => !filled(S.s4[k])).length,
-    r5.filter(r => !filled(S.s5[r.cat ? 'cat' : 'no'][String(r.T)])).length + (PRACTICE ? [S.s5.tminN] : [S.s5.tminN, S.s5.tminC]).filter(x => !filled(x)).length,
+    (PRACTICE ? [S.s5.tminN] : [S.s5.tminN, S.s5.tminC]).filter(x => !filled(x)).length,
     (PRACTICE ? [S.s6.ga] : Object.values(S.s6)).filter(x => !filled(x)).length];
 }
 function askSubmit() {
   if (!curId) return;
   calcOpen(false); pend = null; render();
-  $('cfn').innerHTML = empties().map((n, i) => '<span' + (n ? ' class="e"' : '') + '>[' + (i + 1) + '] 빈 칸 ' + n + '</span>').join('');
+  $('cfn').innerHTML = empties().map((n, i) => '<button type="button" data-s="' + (i + 1) + '"' + (n ? ' class="e"' : '') + '><span' + (n ? ' class="e"' : '') + '>[' + (i + 1) + '] 빈 칸 ' + n + '</span></button>').join('');
   ovl('cf', true); $('cfback').focus();
 }
 function payload() {
@@ -1180,6 +1249,17 @@ function saveFile() {
   $('sfok').textContent = '저장함 · 다운로드 폴더 「' + nm.replace(/\.json$/, '') + '」 · 손 들기';
 }
 $('sub').onclick = askSubmit; $('cfback').onclick = () => ovl('cf', false); $('cfgo').onclick = doSubmit;
+function firstEmpty(i) {
+  const box = document.querySelector('.sec[data-s="' + i + '"]'), A = sheet.s3.arrows;
+  if (i === 3) { const a = Object.keys(AN).find(k => !A[k] || !filled(A[k].value)); return a ? box.querySelector(A[a] ? '[data-f="s3.arrows.' + a + '.value"]' : '.abtn[data-a="' + a + '"]') : null; }
+  if (i === 4 && !sheet.s4.basis.length) return box.querySelector('[data-b]');
+  return [...box.querySelectorAll(i === 5 ? '.tline [data-f]' : '[data-f]')].find(el => !el.disabled && !el.hidden && !filled(el.value)) || null;
+}
+$('cfn').onclick = e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const i = +b.dataset.s; ovl('cf', false); showSec(i);
+  const el = firstEmpty(i); if (el) { el.focus(); el.scrollIntoView({ block: 'nearest' }); }
+};
 $('sfre').onclick = send; $('sfsave').onclick = saveFile; $('sfback').onclick = () => ovl('sf', false);
 
 function mk(tag, attrs, parent) { const el = document.createElementNS(NS, tag); for (const k in attrs) el.setAttribute(k, attrs[k]); (parent || svg).appendChild(el); return el; }
@@ -1192,7 +1272,7 @@ G.xlab.textContent = '반응 경로';
 G.cN = mk('path', { class: 'cv', stroke: '#1d2430', 'stroke-width': 3, fill: 'none' }); G.cC = mk('path', { class: 'cv', stroke: '#1f5fbf', 'stroke-width': 3, fill: 'none', 'stroke-dasharray': '9 7' });
 for (const h in HX) {
   const t = mk('text', { class: 'hl' + (h === 'TSc' ? ' c' : ''), 'text-anchor': 'middle' });
-  for (const p of h.startsWith('TS') ? ['봉우리', h === 'TSn' ? '촉매 없음' : '촉매 있음'] : [HN[h]]) mk('tspan', {}, t).textContent = p;
+  for (const p of h.startsWith('TS') ? ['봉우리', '', ''] : [HN[h]]) mk('tspan', {}, t).textContent = p;
   G.lab[h] = t;
 }
 for (const a in AN) {
@@ -1222,14 +1302,27 @@ function drawGraph() {
   if (sec !== 3 || !w || !h0) return;
   const fs = parseFloat(getComputedStyle(svg).fontSize), lh = Math.ceil(fs * 1.45);
   GP.l = Math.ceil(fs * 1.2) + 16;
-  const xl = gx('TSc') + Math.max(...[...G.lab.TSc.children].map(t => t.getComputedTextLength())) / 2 + 6 > w - 4 - G.xlab.getComputedTextLength() ? 2 : 1; GP.b = (xl + 1) * lh + 8;
+  for (const h in HX) G.lab[h].classList.remove('on');
+  const tlen = t => t.getComputedTextLength(), LC = h => G.lab[h].children, lb = [], lrow = {};
+  for (const h of ['TSn', 'TSc']) { LC(h)[1].textContent = '촉매 ' + (h === 'TSn' ? '없음' : '있음'); LC(h)[2].textContent = ''; }
+  if (gx('TSc') - gx('TSn') - (tlen(LC('TSn')[1]) + tlen(LC('TSc')[1])) / 2 < 8) for (const h of ['TSn', 'TSc']) { LC(h)[1].textContent = '촉매'; LC(h)[2].textContent = h === 'TSn' ? '없음' : '있음'; }
+  const lfree = (r, a, b) => !lb.some(p => p[0] === r && a < p[2] + 8 && p[1] < b + 8);
+  for (const h of ['R', 'P', 'TSn', 'TSc']) {
+    const bs = [...LC(h)].filter(t => t.textContent).map(t => [gx(h) - tlen(t) / 2, gx(h) + tlen(t) / 2]);
+    let r = 0; while (!bs.every((b, i) => lfree(r + i, b[0], b[1]))) r++;
+    bs.forEach((b, i) => lb.push([r + i, b[0], b[1]])); lrow[h] = r;
+  }
+  const nr = Math.max(...lb.map(p => p[0])) + 1, xw = tlen(G.xlab), xc = (GP.l + w - GP.r) / 2;
+  let xl = [...Array(nr).keys()].find(r => lfree(r, w - 4 - xw, w - 4)), xmid = false;
+  if (xl == null) { xmid = lfree(0, xc - xw / 2, xc + xw / 2); xl = xmid ? 0 : nr; }
+  GP.b = (Math.max(nr - 1, xl) + 1) * lh + 8;
   const L = sheet.s3.levels, X = {}, Y = {}, ax = h0 - GP.b, a0 = document.activeElement;
   const act = pend && pend.from ? pend.from : a0 && a0.closest && a0.closest('#g3 .hd') ? a0.dataset.h : '';
   for (const h in HX) { X[h] = gx(h); Y[h] = gy(L[h]); }
   G.yax.setAttribute('d', 'M' + GP.l + ' ' + ax + ' V4 M' + (GP.l - 6) + ' 14 L' + GP.l + ' 4 L' + (GP.l + 6) + ' 14');
   G.xax.setAttribute('d', 'M' + GP.l + ' ' + ax + ' H' + (w - 4) + ' M' + (w - 14) + ' ' + (ax - 6) + ' L' + (w - 4) + ' ' + ax + ' L' + (w - 14) + ' ' + (ax + 6));
   [...G.ylab.children].forEach((t, i) => { t.setAttribute('x', (GP.l - 8) / 2); t.setAttribute('y', 8 + fs + i * lh); });
-  G.xlab.setAttribute('x', w - 4); G.xlab.setAttribute('y', ax + 6 + fs + xl * lh);
+  G.xlab.setAttribute('text-anchor', xmid ? 'middle' : 'end'); G.xlab.setAttribute('x', xmid ? xc : w - 4); G.xlab.setAttribute('y', ax + 6 + fs + xl * lh);
   const seg = (x0, y0, x1, y1) => ' C' + (x0 + x1) / 2 + ' ' + y0 + ' ' + (x0 + x1) / 2 + ' ' + y1 + ' ' + x1 + ' ' + y1;
   const curve = T => 'M' + (GP.l + 2) + ' ' + Y.R + ' H' + X.R + seg(X.R, Y.R, X[T], Y[T]) + seg(X[T], Y[T], X.P, Y.P) + ' H' + (w - GP.r);
   G.cN.setAttribute('d', curve('TSn')); G.cC.setAttribute('d', curve('TSc'));
@@ -1238,7 +1331,7 @@ function drawGraph() {
     H.g.setAttribute('transform', 'translate(' + X[h] + ' ' + Y[h] + ')'); H.g.setAttribute('aria-valuenow', L[h]);
     H.g.classList.toggle('sel', !!pend && pend.from === h);
     G.lab[h].classList.toggle('on', h === act);
-    [...G.lab[h].children].forEach((t, i) => { t.setAttribute('x', X[h]); t.setAttribute('y', ax + 6 + fs + i * lh); });
+    [...G.lab[h].children].forEach((t, i) => { t.setAttribute('x', X[h]); t.setAttribute('y', ax + 6 + fs + (lrow[h] + i) * lh); });
     G.gd[h].setAttribute('d', 'M' + X[h] + ' ' + (Y[h] + 14) + ' V' + ax);
   }
   const bx = (x0, y0, x1, y1) => ({ x0, y0, x1, y1 }), hitB = (p, q) => p.x0 < q.x1 && q.x0 < p.x1 && p.y0 < q.y1 && q.y0 < p.y1;
@@ -1277,7 +1370,7 @@ new ResizeObserver(drawGraph).observe(svg);
 svg.addEventListener('focusin', drawGraph); svg.addEventListener('focusout', () => requestAnimationFrame(drawGraph));
 function hint() {
   svg.classList.toggle('picking', !!pend);
-  $('ahint').textContent = !pend ? '손잡이 위아래로 끌기(↑↓ 글쇠) · 화살표: 단추 → 시작 손잡이 → 끝 손잡이'
+  $('ahint').textContent = !pend ? '동그라미(손잡이)를 위아래로 끌기(↑↓ 키) · 화살표: 오른쪽 단추 → 시작 손잡이 → 끝 손잡이 · 화살표를 놓으면 그 값 칸이 열림'
     : AN[pend.a] + ': ' + (pend.from ? HN[pend.from] + ' → 끝 손잡이 누름' : '시작 손잡이 누름') + ' · 단추 다시 누르면 그만둠';
 }
 function pickH(h) {
