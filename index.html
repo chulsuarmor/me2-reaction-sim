@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>반응 공정 가상 실험</title>
+<script>
+window.ME2_API = 'https://script.google.com/macros/s/AKfycbxnDBR2wZY_LtNBib7EuXCPA_b4OZCNpJ-S488HLQcxrMSnRuoalE-eG4hUOUuo6SoF/exec';
+</script>
+<style>
+body { margin: 0; padding: 40px 24px; background: #fff; color: #1d2430; font-family: "Malgun Gothic", sans-serif; font-size: 22px; line-height: 1.5; word-break: keep-all; }
+h1 { font-size: 30px; margin: 0 0 12px; } p { margin: 0; }
+</style>
+</head>
+<body>
+<h1 id="h">연결 중</h1><p id="t">· 잠시 기다림</p>
+<script>
+(function () {
+  const say = (h, t) => { document.getElementById('h').textContent = h; document.getElementById('t').textContent = '· ' + t; };
+  fetch(window.ME2_API + '?api=config', { credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout ? AbortSignal.timeout(15000) : undefined }).then(r => r.json()).then(c => {
+    const to = !c || c.ok !== true ? '' : c.mode === '본평가' ? '본평가.html' : c.mode === '연습' ? '연습.html' : '';
+    if (to) location.replace(to); else say('지금은 열려 있지 않음', '선생님께 알림');
+  }).catch(() => say('연결 안 됨', '새로 고침'));
+})();
+</script>
+</body>
+</html>

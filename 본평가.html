@@ -1,0 +1,1412 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>반응 공정 가상 실험</title>
+<script>
+window.ME2_EVAL_CODE = 'ME2-2026-2';
+window.ME2_MODE = 'eval';
+window.ME2_API = 'https://script.google.com/macros/s/AKfycbxnDBR2wZY_LtNBib7EuXCPA_b4OZCNpJ-S488HLQcxrMSnRuoalE-eG4hUOUuo6SoF/exec';
+</script>
+<style>
+:root { --ink:#1d2430; --sub:#46505e; --line:#c9d1dc; --panel:#f3f5f8; --a:#2f6fd0; --b:#e07b1a; --mark:#b03a2e; --go:#1d7a46; --pick:#1f4f9e; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #ffffff; color: var(--ink);
+  font-family: "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; font-size: clamp(19px, 0.75vw + 10px, 24px); line-height: 1.3; word-break: keep-all; }
+header { display: flex; align-items: center; gap: 1em; padding: 4px 16px; border-bottom: 2px solid var(--line); height: 2.6em; }
+h1 { font-size: 1.35em; margin: 0; }
+h2 { font-size: 1.05em; margin: 0 0 3px; }
+#who { font-size: 1.3em; font-weight: 700; color: var(--a); }
+header .sp { flex: 1; }
+button, input, textarea { font: inherit; }
+button { min-height: 44px; padding: 4px 12px; border: 2px solid #8a96a8; background: #fff; color: var(--ink); border-radius: 8px; cursor: pointer; touch-action: manipulation; }
+button.on { background: var(--pick); border-color: var(--pick); color: #fff; font-weight: 700; }
+button:disabled { opacity: 0.4; cursor: default; }
+#start { max-width: 34em; margin: 12vh auto 0; padding: 24px; border: 2px solid var(--line); border-radius: 12px; background: var(--panel); }
+#start label { display: block; margin-bottom: 8px; }
+#start input { width: 100%; padding: 8px 10px; border: 2px solid #8a96a8; border-radius: 8px; font-size: max(22px, 1em); min-height: 48px; }
+#start button { min-height: 56px; padding: 4px 22px; }
+#start .row { display: flex; gap: 12px; margin-top: 14px; align-items: center; }
+#idbig { font-size: 2.4em; font-weight: 700; color: var(--a); letter-spacing: 0.05em; }
+#ok, #rend { background: var(--go); border-color: var(--go); color: #fff; font-weight: 700; }
+#msg { color: var(--mark); }
+#lab { display: grid; grid-template-columns: minmax(0, 28fr) minmax(0, 32fr) minmax(0, 40fr); grid-template-rows: auto minmax(0, 1fr); gap: 6px 12px; padding: 6px 16px; height: calc(100% - 2.6em); }
+#c1 { grid-column: 1 / -1; }
+#lab[hidden], #start[hidden] { display: none; }
+aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-height: 0; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 5px 12px; }
+.kv { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 1.2em; }
+.kv > span { color: var(--sub); white-space: nowrap; }
+.kv b { color: var(--ink); }
+.temps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-top: 6px; }
+.temps button { padding: 0; }
+.row2 { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.row2.one { flex-wrap: nowrap; gap: 6px; }
+.row2.one h2 { margin: 0; white-space: nowrap; }
+.row2.one button { padding: 4px 6px; white-space: nowrap; }
+.seg { flex: 1; display: grid; grid-template-columns: 1fr 1fr; }
+.seg button:first-child { border-radius: 8px 0 0 8px; }
+.seg button:last-child { border-radius: 0 8px 8px 0; border-left: 0; }
+#rend { flex: 1; min-height: 56px; font-size: 1.25em; }
+.prog { display: flex; align-items: center; gap: 10px; margin-top: 4px; color: var(--sub); white-space: nowrap; }
+.bar { flex: 1; height: 12px; background: #dde3ea; border-radius: 6px; overflow: hidden; }
+#bar { display: block; height: 100%; width: 0; background: var(--a); }
+#rcond { font-size: 1.1em; margin-left: 0.5em; }
+.note { color: var(--sub); text-wrap: balance; }
+.main { display: flex; flex-direction: column; gap: 4px; min-width: 0; min-height: 0; }
+#boxwrap { position: relative; width: 100%; aspect-ratio: 1000 / 370; flex: none; }
+#box, #hist { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.legend { display: flex; gap: 0 1em; color: var(--sub); flex-wrap: wrap; }
+.dot { display: inline-block; width: 0.8em; height: 0.8em; border-radius: 50%; vertical-align: -0.05em; margin-right: 4px; }
+.tiles { display: flex; flex-wrap: wrap; gap: 6px; }
+.tile { flex: 1 1 auto; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 2px 4px; text-align: center; min-width: 0; }
+.tile .k { color: var(--sub); white-space: nowrap; }
+.tile .v { font-size: 1.2em; font-weight: 700; white-space: nowrap; }
+#histwrap { position: relative; width: 100%; flex: 1 1 0; min-height: 4.5em; }
+.notes { flex: none; }
+#tail { min-height: 1.3em; }
+#logwrap { flex: none; height: 9.6em; overflow-y: auto; border: 1px solid var(--line); border-radius: 8px; }
+.main > .lh { margin: 0; }
+#lab.nolog .lh, #lab.nolog #logwrap { display: none; }
+#c4 .tiles, #logwrap, #tail { user-select: none; -webkit-user-select: none; }
+#log { width: 100%; border-collapse: collapse; text-align: right; }
+#log th, #log td { padding: 0 6px; white-space: nowrap; }
+#log th { white-space: normal; }
+#log th:nth-child(-n+2), #log td:nth-child(-n+2), #log td[colspan] { text-align: center; }
+#log thead th { position: sticky; top: 0; background: var(--panel); color: var(--sub); font-weight: 400; }
+#log tbody tr + tr td { border-top: 1px solid var(--line); }
+#log tbody tr.grp td { border-top: 3px solid #8a96a8; }
+#log tbody tr { scroll-margin-top: 2.6em; }
+#log tbody tr.new td { animation: hl 2s ease-out; }
+#logwrap::after { content: ""; display: block; height: 1.4em; }
+@keyframes hl { 0%, 50% { background: #ffd966; } 100% { background: transparent; } }
+#bad { display: none; position: fixed; left: 0; right: 0; bottom: 0; background: var(--mark); color: #fff; padding: 6px 12px; }
+#figs { position: relative; display: flex; flex-direction: column; gap: 4px; min-width: 0; min-height: 0; }
+#figs[hidden], #sheet[hidden], .sec[hidden] { display: none; }
+#work { position: relative; flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+#sheet { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 6px; }
+#exp { position: relative; display: flex; flex-direction: column; gap: inherit; }
+#lab.calcon #figs > :not(#calc) { visibility: hidden; }
+.tabs, .foot { display: flex; gap: 6px; align-items: center; }
+.tabs button { flex: 1; padding: 0 4px; white-space: nowrap; }
+.tabs button .n { font-weight: 400; }
+#sheet button { min-height: 48px; }
+.foot .sp { flex: 1; }
+.foot button { flex: none; padding: 4px 8px; white-space: nowrap; }
+#sbody { flex: 1; min-height: 0; overflow-y: auto; border: 2px solid var(--line); border-radius: 10px; padding: 4px 10px 6px; container: sb / inline-size; }
+.sec { display: flex; flex-direction: column; gap: 6px; }
+.sec .ask { margin: 0; }
+.sec .lab, .sec label { font-weight: 700; }
+.sec input, .sec textarea { font-size: max(22px, 1em); min-height: 48px; width: 100%; min-width: 0; border: 2px solid #5b6675; border-radius: 8px; padding: 2px 6px; background: #fff; color: var(--ink); }
+.sec textarea { resize: none; line-height: 1.3; display: block; }
+.sec input:placeholder-shown, .sec textarea:placeholder-shown { border-style: dashed; background: #f6f8fb; }
+.sec input:focus, .sec textarea:focus { outline: 4px solid var(--pick); outline-offset: 0; border-color: var(--pick); }
+.sec input:disabled { opacity: 0.45; }
+.u { color: var(--sub); white-space: nowrap; }
+.g1 { display: grid; grid-template-columns: repeat(auto-fill, minmax(12em, 1fr)); gap: 6px 12px; }
+.g1 .w { display: flex; align-items: center; gap: 6px; }
+.g2 { display: grid; grid-template-columns: auto 1.4fr 1fr 1fr 1fr; gap: 4px 6px; align-items: center; text-align: center; }
+#g5 { display: grid; grid-template-columns: auto repeat(11, minmax(0, 1fr)); gap: 3px; align-items: center; text-align: center; }
+#g5 > * { grid-column: var(--c1); grid-row: var(--r1); }
+#g5 input { padding: 2px 1px; text-align: center; }
+#g5 .x2 { display: none; }
+#g5 .rl { line-height: 1.35; padding-right: 4px; }
+.tline { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.tline input { width: 5em; }
+@container sb (max-width: 600px) {
+  #g5 { grid-template-columns: auto repeat(6, minmax(0, 1fr)); row-gap: 3px; }
+  #g5 > * { grid-column: var(--c2); grid-row: var(--r2); }
+  #g5 .x2 { display: block; }
+}
+.syms { display: flex; gap: 6px; }
+.syms button { min-width: 44px; padding: 0 8px; }
+.stk { position: sticky; top: 0; z-index: 1; background: #fff; }
+.pick { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.pick button[aria-pressed="true"] { background: var(--pick); border-color: var(--pick); color: #fff; font-weight: 700; }
+.pick button[aria-pressed="true"]::before { content: "✓ "; }
+.g4 { display: grid; grid-template-columns: auto 1fr; gap: 6px 8px; align-items: center; }
+.g4 .ans { display: flex; align-items: center; gap: 6px; }
+.g4 .ans input { width: 7em; }
+.g6:not([hidden]) { min-height: 100%; }
+.g6 .s6h { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; }
+.g6 .s6h h2 { margin: 0; }
+.g6 .s6h .syms { flex: 1 1 0; min-width: 0; flex-wrap: wrap; }
+.g6 textarea { flex: 1 0 auto; min-height: calc(6.5em + 8px); }
+.s3h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 1.4em; }
+.lg { display: inline-flex; align-items: center; gap: 6px; color: var(--ink); }
+.lg i { display: inline-block; width: 36px; border-top: 3px solid var(--ink); }
+.lg i.dash { border-top: 3px dashed #1f5fbf; margin-left: 10px; }
+.sec[data-s="3"]:not([hidden]) { min-height: 100%; }
+.g3 { display: flex; gap: 8px; flex: 1; min-height: 0; }
+#g3 { flex: 1 1 0; min-width: 0; display: block; background: #fff; border: 1px solid var(--line); border-radius: 8px; touch-action: none; }
+#g3 text, #g3 tspan { fill: var(--ink); }
+#g3 .ax { font-weight: 700; }
+#g3 .hl.c tspan { fill: #1f5fbf; }
+#g3 .hl.on tspan { font-weight: 700; text-decoration: underline; }
+#g3 .ar text { font-size: 1.15em; font-weight: 700; }
+#g3 .hd { cursor: ns-resize; outline: none; }
+#g3 .hit { fill: transparent; }
+#g3 .dot { fill: #fff; stroke: var(--ink); stroke-width: 3; }
+#g3 .hd:focus .dot, #g3 .hd.sel .dot { stroke: var(--pick); stroke-width: 5; fill: #dbe6f7; }
+#g3.picking .dot { fill: #ffd966; }
+.ap { flex: none; width: 9.5em; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px; align-content: start; }
+.ap .abtn { grid-column: 1 / 3; text-align: left; white-space: nowrap; }
+.ap .abtn ~ .abtn { margin-top: 4px; }
+.ap input { width: 100%; }
+.ap .abtn.on { background: #ffd966; border-color: #8a6d00; color: var(--ink); font-weight: 700; }
+#ahint { margin: 0; }
+#note2 { color: var(--mark); font-weight: 700; }
+#calc { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; gap: 6px; padding: 6px; background: #fff; border: 2px solid var(--pick); border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.18); }
+#calc[hidden] { display: none; }
+#calc .crow { display: flex; align-items: center; gap: 8px; }
+#calc .crow .note { flex: 1; }
+#cscr { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); padding: 2px 10px; text-align: right; }
+#cexp, #cans { white-space: nowrap; overflow: hidden; }
+#cexp { color: var(--sub); min-height: 1.3em; }
+#cans { font-size: 1.3em; font-weight: 700; min-height: 1.3em; }
+#ckeys { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: minmax(44px, 1fr); gap: 6px; }
+#ckeys button { padding: 0; font-size: 1.1em; }
+#ckeys button.op { background: #e8eefa; }
+#ckeys button.eq { background: var(--go); border-color: var(--go); color: #fff; font-weight: 700; }
+#ckeys button.hit { background: #ffd966; color: var(--ink); }
+#lab.calcon .tile, #lab.calcon #logb td:not(:nth-child(2)):not([colspan]) { cursor: pointer; }
+#lab.calcon .tile .v, #lab.calcon #logb td:not(:nth-child(2)):not([colspan]) { text-decoration: underline dotted #8a96a8; text-underline-offset: 4px; }
+#ckeys [data-k="÷"], #ckeys [data-k="×"], #ckeys [data-k="−"], #ckeys [data-k="+"], #ckeys [data-k="."] { font-size: 1.7em; font-weight: 700; line-height: 1; }
+#sub, .go { background: var(--go); border-color: var(--go); color: #fff; font-weight: 700; }
+#sub { margin-left: 10px; padding: 4px 14px; font-size: 1.1em; }
+.ovl { position: fixed; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center; padding: 12px 16px; background: rgba(29, 36, 48, 0.6); }
+.ovl[hidden], #done[hidden] { display: none; }
+.dlg { width: min(40em, 100%); max-height: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 14px 22px; background: #fff; border: 3px solid var(--go); border-radius: 14px; }
+.dlg h2 { font-size: 1.3em; margin: 0; }
+.dlg p { margin: 0; }
+.dlg .row { display: flex; gap: 12px; }
+.dlg .row button { flex: 1; min-height: 56px; font-size: 1.15em; font-weight: 700; }
+.dlg > button { min-height: 48px; }
+.cfn { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px 12px; }
+.cfn span { padding: 2px 8px; border: 2px solid var(--line); border-radius: 8px; white-space: nowrap; }
+.cfn span.e { border-color: var(--mark); font-weight: 700; }
+.warn { font-weight: 700; color: var(--mark); }
+#done { max-width: 34em; margin: 10vh auto 0; padding: 22px 28px; border: 4px solid var(--go); border-radius: 14px; background: #eef7f1; text-align: center; }
+#done h2 { font-size: 2em; color: var(--go); margin: 0 0 12px; }
+#done dl { display: grid; grid-template-columns: auto auto; justify-content: center; gap: 6px 18px; margin: 0 0 14px; font-size: 1.2em; text-align: left; }
+#done dd { margin: 0; font-weight: 700; }
+#done .hand { font-size: 1.3em; font-weight: 700; margin: 0; }
+
+@media (max-height: 740px) {
+  html, body { font-size: 18px; line-height: 1.2; }
+  #lab { padding-top: 4px; }
+  aside { gap: 3px; }
+  .card { padding: 2px 10px; }
+  .kv { line-height: 1.3; }
+  .temps { margin-top: 6px; }
+  #rend { min-height: 44px; }
+  .prog { margin-top: 2px; }
+  #logwrap { height: 8.8em; }
+}
+@media (max-height: 620px) {
+  #lab { padding: 4px 16px 1px; }
+  aside { gap: 2px; }
+  .card { padding: 1px 10px; }
+  .sec h2 { margin: 0; }
+  .sec .ask + .ask { margin-top: -3px; }
+  .ap .abtn ~ .abtn { margin-top: 1px; }
+  #logwrap { height: 7.5em; }
+  #lab.s4 #logwrap { height: 4.6em; }
+  #lab.s2 #logwrap { height: 5.6em; }
+}
+@media (max-height: 609px) {
+  #lab { padding-top: 2px; padding-bottom: 0; row-gap: 3px; }
+  #c1 { padding-top: 0; padding-bottom: 0; }
+  #c1 .kv { line-height: 1.2; }
+  #c4 h2, #figs > h2 { margin: 0; line-height: 1.15; }
+  #c4 .tile { padding: 1px 4px; line-height: 1.15; }
+  #tail { min-height: 1.2em; }
+  #figs { gap: 2px; }
+  #boxwrap { aspect-ratio: 1000 / 338; }
+  #figs .legend { gap: 0 0.6em; line-height: 1.15; }
+  #figs .notes { padding-top: 0; padding-bottom: 0; line-height: 1.15; }
+}
+</style>
+</head>
+<body>
+<header><h1>반응 공정 가상 실험</h1><span id="who"></span><span id="clock"></span><span id="note2"></span><span class="sp"></span><button id="calcbtn" type="button" hidden>계산기</button><button id="home" type="button" hidden>처음으로</button></header>
+
+<section id="start">
+  <div id="gate" hidden><h2 id="gh"></h2><p id="gt"></p></div>
+  <div id="s1">
+    <h2>학번 입력</h2>
+    <label for="sid">학번</label>
+    <input id="sid" autocomplete="off" spellcheck="false" autofocus>
+    <div class="row"><button id="go" type="button">확인</button><span id="msg"></span></div>
+  </div>
+  <div id="s2" hidden>
+    <h2>학번 확인</h2>
+    <div id="idbig"></div>
+    <div class="row"><button id="ok" type="button">이 학번이 맞음</button><button id="redo" type="button">다시 입력</button></div>
+  </div>
+  
+</section>
+
+<main id="lab" hidden>
+    <div class="card" id="c1">
+      <div class="kv">
+        <h2>① 반응 정보</h2>
+        <span>반응식 <b>2A(g) → B(g)</b></span>
+        <span>반응 엔탈피 ΔH <b><span id="i-dh"></span> kJ/mol (발열)</b></span>
+        <span>활성화 에너지 <b>촉매 없음 <span id="i-ean"></span> · 촉매 있음 <span id="i-eac"></span> kJ/mol</b></span>
+        <span>기체 분자 수 <b>2 → 1</b></span>
+        <span>반응기 A <b>늘 100개</b></span>
+        <span>관찰 시간 <b><span id="i-tobs"></span> 초</b></span>
+        <span>목표 생성물 비율 <b id="i-tg"></b></span>
+        <span>기준 온도 <b><span id="i-tref"></span> K</b></span>
+      </div>
+    </div>
+  <aside>
+    <div id="exp">
+    <div class="card" id="c2">
+      <div class="row2 one"><h2>② 조건 고르기</h2><div class="seg" id="cats"><button type="button" data-cat="0">촉매 없음</button><button type="button" data-cat="1">촉매 있음</button></div></div>
+      <div class="temps" id="temps"></div>
+    </div>
+    <div class="card" id="c3">
+      <div class="row2 one"><h2>③ 실행</h2><button id="rend" type="button">실험하기</button><button id="rslow" type="button">천천히 보기</button></div>
+      <div class="prog"><span id="status">준비</span><span class="bar"><span id="bar"></span></span><span>경과 <span id="o-t">0.0 초</span></span></div>
+    </div>
+    </div>
+    <div class="card" id="c4">
+      <h2>④ 결과<span id="rcond"></span></h2>
+      <div class="tiles">
+        <div class="tile"><div class="k">전체 충돌</div><div class="v" id="o-aa">—</div></div>
+        <div class="tile"><div class="k">유효 충돌</div><div class="v" id="o-eff">—</div></div>
+        <div class="tile"><div class="k">반응기 A</div><div class="v" id="o-na">—</div></div>
+        <div class="tile"><div class="k">회수한 B</div><div class="v" id="o-nb">—</div></div>
+        <div class="tile"><div class="k">생성물 비율</div><div class="v" id="o-r">—</div></div>
+      </div>
+      <div class="note" id="tail"></div>
+    </div>
+  </aside>
+  <section id="figs">
+    <div id="boxwrap"><canvas id="box"></canvas></div>
+    <div class="legend"><span><span class="dot" style="background:var(--a)"></span>A 공급구로 들어옴</span><span><span class="dot" style="background:var(--b)"></span>B 회수 탱크로</span><span id="cond"></span><span id="scene"></span></div>
+    <h2>충돌 에너지 분포 (A끼리 충돌 · 가로 kJ/mol · 세로 충돌 수)</h2>
+    <div id="histwrap"><canvas id="hist"></canvas></div>
+    <div class="card notes">
+      <div class="note">전체 충돌 = A 끼리 부딪친 횟수 · 유효 충돌 = 그중 B 를 만든 충돌</div>
+      <div class="note">생성물 비율 = 회수한 B ÷ (반응기 A 100 + 회수한 B)</div>
+      <div class="note">기준 온도 = 촉매 없음 · 있음 비교 · 속도 증가비 구하는 온도</div>
+      <div class="note">충돌 수 · 회수한 B = 관찰 시간 동안 센 값</div>
+    </div>
+    <div id="calc" hidden>
+      <div class="crow"><span class="note">④ 결과 · 목록 숫자를 누르면 들어감</span><button id="cclose" type="button">닫기</button></div>
+      <div id="cscr"><div id="cexp"></div><div id="cans"></div></div>
+      <div id="ckeys"></div>
+    </div>
+  </section>
+  <section class="main">
+    <div id="work">
+    <div id="sheet">
+      <div class="tabs" id="tabs"></div>
+      <div id="sbody">
+        <div class="sec" data-s="1">
+          <h2>[1] 반응 조건</h2>
+          <p class="ask">화면 ① 반응 정보의 값을 그대로 적음</p>
+          <div class="g1">
+            <div><label for="f-dH">반응 엔탈피 ΔH</label><div class="w"><input id="f-dH" data-f="s1.dH"><span class="u">kJ/mol</span></div></div>
+            <div><label for="f-EaN">활성화 에너지 Ea(촉매 없음)</label><div class="w"><input id="f-EaN" data-f="s1.EaN"><span class="u">kJ/mol</span></div></div>
+            <div><label for="f-EaC">활성화 에너지 Ea(촉매 있음)</label><div class="w"><input id="f-EaC" data-f="s1.EaC"><span class="u">kJ/mol</span></div></div>
+            <div><label for="f-tObs">관찰 시간</label><div class="w"><input id="f-tObs" data-f="s1.tObs"><span class="u">초</span></div></div>
+            <div><label for="f-target">목표 생성물 비율</label><div class="w"><input id="f-target" data-f="s1.target"></div></div>
+            <div><label for="f-Tref">기준 온도</label><div class="w"><input id="f-Tref" data-f="s1.Tref"><span class="u">K</span></div></div>
+          </div>
+        </div>
+        <div class="sec" data-s="2" hidden>
+          <h2>[2] 기준 온도 측정값</h2>
+          <p class="ask">기준 온도에서 「실험하기」 뒤 화면 ④ 결과 칸의 값을 적음</p>
+          <div class="g2">
+            <span></span><span class="lab">전체 충돌</span><span class="lab">유효 충돌</span><span class="lab">회수한 B</span><span class="lab">생성물 비율</span>
+            <span class="lab">촉매 없음</span><input data-f="s2.no.aa" aria-label="촉매 없음 전체 충돌"><input data-f="s2.no.eff" aria-label="촉매 없음 유효 충돌"><input data-f="s2.no.nB" aria-label="촉매 없음 회수한 B"><input data-f="s2.no.ratio" aria-label="촉매 없음 생성물 비율">
+            <span class="lab">촉매 있음</span><input data-f="s2.cat.aa" aria-label="촉매 있음 전체 충돌"><input data-f="s2.cat.eff" aria-label="촉매 있음 유효 충돌"><input data-f="s2.cat.nB" aria-label="촉매 있음 회수한 B"><input data-f="s2.cat.ratio" aria-label="촉매 있음 생성물 비율">
+          </div>
+        </div>
+        <div class="sec" data-s="3" hidden>
+          <div class="s3h"><h2>[3] 에너지 변화 그래프</h2><span class="lg"><i></i>촉매 없음<i class="dash"></i>촉매 있음</span></div>
+          <p class="ask">반응물 · 생성물 높이와 촉매 없음 · 있음 두 경로를 그리고 Ea 두 개 · ΔH를 화살표와 값으로 표시하시오.</p>
+          <p class="note" id="ahint"></p>
+          <div class="g3">
+            <svg id="g3" role="img" aria-label="에너지 변화 그래프"></svg>
+            <div class="ap">
+              <button type="button" class="abtn" data-a="EaN">Ea(촉매 없음)</button><input data-f="s3.arrows.EaN.value" aria-label="Ea(촉매 없음) 값"><button type="button" class="adel" data-a="EaN">지우기</button>
+              <button type="button" class="abtn" data-a="EaC">Ea(촉매 있음)</button><input data-f="s3.arrows.EaC.value" aria-label="Ea(촉매 있음) 값"><button type="button" class="adel" data-a="EaC">지우기</button>
+              <button type="button" class="abtn" data-a="dH">ΔH</button><input data-f="s3.arrows.dH.value" aria-label="ΔH 값"><button type="button" class="adel" data-a="dH">지우기</button>
+            </div>
+          </div>
+        </div>
+        <div class="sec" data-s="4" hidden>
+          <h2>[4] 속도 증가비 (기준 온도)</h2>
+          <p class="ask">기준 온도에서 촉매 없음 · 있음의 속도 증가비를 구하시오.</p>
+          <div class="pick"><span class="lab">쓴 값 (하나 고름)</span><button type="button" data-b="nB" aria-pressed="false">회수한 B</button><button type="button" data-b="frac" aria-pressed="false">유효 충돌 몫</button><button type="button" data-b="above" aria-pressed="false">Ea보다 큰 충돌 수</button></div>
+          <div class="syms stk" data-k="÷ × ( ) ="></div>
+          <div class="g4">
+            <label for="f-formula">식</label><textarea id="f-formula" data-f="s4.formula" rows="1"></textarea>
+            <label for="f-sub">대입</label><textarea id="f-sub" data-f="s4.sub" rows="1"></textarea>
+            <label for="f-ans">답</label><div class="ans"><input id="f-ans" data-f="s4.ans"><span class="u">(소수 둘째 자리까지)</span></div>
+          </div>
+        </div>
+        <div class="sec" data-s="5" hidden>
+          <h2>[5] 최저 온도 찾기</h2>
+          <p class="ask">목표 생성물 비율을 얻는 최저 온도를 촉매 없음 · 있음 각각 찾으시오.</p>
+          <p class="ask">· 최저 온도: 화면 생성물 비율이 목표 이상이 처음 되는 온도</p>
+          <p class="ask">· 해 본 온도 칸에만 화면 생성물 비율을 적음</p>
+          <div id="g5"></div>
+          <div class="tline"><span class="lab">최저 온도</span><label for="f-tminN">촉매 없음</label><input id="f-tminN" data-f="s5.tminN"><span class="u">K</span><label for="f-tminC">촉매 있음</label><input id="f-tminC" data-f="s5.tminC"><span class="u">K</span></div>
+        </div>
+        <div class="sec g6" data-s="6" hidden>
+          <div class="s6h stk"><h2>[6] 설명</h2><div class="syms" data-k="ΔH ΔS계 ΔS주위 ΔS전체 Ea &gt; &lt; = →"></div></div>
+          <label for="f-ga">(가) 촉매가 반응을 빠르게 하는 까닭을 [2] 측정값(전체 충돌 · 유효 충돌)을 근거로 쓰시오.</label>
+          <textarea id="f-ga" data-f="s6.ga"></textarea>
+          <label for="f-na">(나) 기체 분자 수 변화로 ΔS계의 부호와 까닭을 쓰시오.</label>
+          <textarea id="f-na" data-f="s6.na"></textarea>
+          <label for="f-da">(다) ΔS전체 = ΔS계 + ΔS주위 를 써서 온도에 따라 이 반응의 자발성이 달라지는지, 달라진다면 어떻게 달라지는지 쓰시오.</label>
+          <textarea id="f-da" data-f="s6.da"></textarea>
+        </div>
+      </div>
+      <div class="foot"><button type="button" id="prev">◀ 이전</button><button type="button" id="next">다음 ▶</button><span class="sp"></span><button type="button" id="undo">되돌리기</button><button type="button" id="again">다시 하기</button><button type="button" id="sub">제출</button></div>
+    </div>
+    </div>
+    <h2 class="lh">지금까지 한 실험</h2>
+    <div id="logwrap"><table id="log"><thead><tr><th>온도</th><th>촉매</th><th>전체 충돌</th><th>유효 충돌</th><th>회수한 B</th><th>생성물 비율</th></tr></thead><tbody id="logb"></tbody></table></div>
+  </section>
+</main>
+<section id="done" hidden>
+  <h2>✓ 제출됨</h2>
+  <dl><dt>학번</dt><dd id="d-id"></dd><dt>제출 시각</dt><dd id="d-t"></dd><dt>접수 번호</dt><dd id="d-r"></dd></dl>
+  <p class="hand">손을 들어 선생님께 알림</p>
+</section>
+<div id="cf" class="ovl" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="cfh">
+  <h2 id="cfh">제출 확인</h2>
+  <div class="cfn" id="cfn"></div>
+  <p class="warn">· 빈 칸이 있어도 제출됨<br>· 제출하면 고칠 수 없음</p>
+  <div class="row"><button type="button" id="cfback">돌아가서 더 쓰기</button><button type="button" id="cfgo" class="go">제출하기</button></div>
+</div></div>
+<div id="sf" class="ovl" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="sfh">
+  <h2 id="sfh"></h2>
+  <p id="sft"></p>
+  <div class="row" id="sfrow"><button type="button" id="sfre" class="go">다시 보내기</button><button type="button" id="sfsave">이 PC 에 파일로 저장</button></div>
+  <p id="sfok"></p>
+  <button type="button" id="sfback">돌아가서 더 쓰기</button>
+</div></div>
+
+<div id="bad"></div>
+
+<script id="jsm">
+'use strict';
+(function (root) {
+const DEFAULT_CODE = 'ME2-2026-2';
+const W = 720, H = 280, R = 5, MA = 4, MB = 8, NA = 100, NPAIR = NA * (NA - 1) / 2;
+const KT300 = 4.1264e7;
+const RGAS = 8.314, P_ST = 0.10;
+const LEAD = 3;
+const TEMPS = [300, 320, 340, 360, 380, 400, 420, 440, 460, 480, 500];
+const INLET = [0.3 * H, 0.7 * H];
+const PI = 3.141592653589793, LN2 = 0.6931471805599453, SQRT2 = 1.4142135623730951, SQRT1_2 = 0.7071067811865476;
+const NBIN = 60, NBUF = 32;
+function lnf(x) {
+  let k = 0;
+  while (x > SQRT2) { x *= 0.5; k++; }
+  while (x < SQRT1_2) { x *= 2; k--; }
+  const z = (x - 1) / (x + 1), z2 = z * z;
+  let term = z, sum = z;
+  for (let i = 3; i <= 31; i += 2) { term *= z2; sum += term / i; }
+  return 2 * sum + k * LN2;
+}
+function expf(x) {
+  const n = Math.round(x / LN2), r = x - n * LN2;
+  let term = 1, sum = 1;
+  for (let k = 1; k <= 18; k++) { term = term * r / k; sum += term; }
+  if (n > 0) for (let i = 0; i < n; i++) sum *= 2; else for (let i = 0; i < -n; i++) sum *= 0.5;
+  return sum;
+}
+function normId(id) { return String(id).normalize('NFKC').replace(/\s+/g, '').toUpperCase(); }
+function utf8(str) {
+  const out = [];
+  for (let i = 0; i < str.length; i++) {
+    let c = str.charCodeAt(i);
+    if (c >= 0xD800 && c < 0xDC00 && i + 1 < str.length) { const d = str.charCodeAt(i + 1); if (d >= 0xDC00 && d < 0xE000) { c = 0x10000 + ((c - 0xD800) << 10) + (d - 0xDC00); i++; } }
+    if (c < 0x80) out.push(c);
+    else if (c < 0x800) out.push(0xC0 | (c >> 6), 0x80 | (c & 63));
+    else if (c < 0x10000) out.push(0xE0 | (c >> 12), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63));
+    else out.push(0xF0 | (c >> 18), 0x80 | ((c >> 12) & 63), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63));
+  }
+  return out;
+}
+function fnv1a(str) {
+  let h = 0x811C9DC5;
+  for (const b of utf8(str)) { h ^= b; h = Math.imul(h, 0x01000193) >>> 0; }
+  return h >>> 0;
+}
+function evalCode() { return (root && typeof root.ME2_EVAL_CODE === 'string' && root.ME2_EVAL_CODE) || DEFAULT_CODE; }
+function seedOf(id, code) { return fnv1a((code || evalCode()) + '|' + normId(id)); }
+function rng(seed) {
+  let a = seed >>> 0;
+  return function () { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+function pickCombo(seed, n) { return Math.floor(rng(seed)() * n); }
+function comboOf(id, combos, code) {
+  const nid = normId(id), cd = code || evalCode(), seed = seedOf(nid, cd);
+  if (!/^\d+$/.test(nid)) return pickCombo(seed, combos.length);
+  const m = new Map();
+  combos.forEach((c, i) => { const k = c.EaN + '|' + c.EaC + '|' + c.target + '|' + c.tObs; if (!m.has(k)) m.set(k, []); m.get(k).push(i); });
+  const F = [...m.values()], order = F.map((_, i) => i), r = rng(fnv1a(cd + '|forms'));
+  for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)), t = order[i]; order[i] = order[j]; order[j] = t; }
+  let rem = 0; for (const ch of nid) rem = (rem * 10 + ch.charCodeAt(0) - 48) % F.length;
+  const g = F[order[rem]]; return g[pickCombo(seed, g.length)];
+}
+function normal(r) {
+  let u, v, q;
+  do { u = 2 * r() - 1; v = 2 * r() - 1; q = u * u + v * v; } while (q >= 1 || q === 0);
+  return u * Math.sqrt(-2 * lnf(q) / q);
+}
+const ETA = NA * PI * R * R / (W * H);
+const CHI = (1 - 7 * ETA / 16) / ((1 - ETA) * (1 - ETA));
+const AW = W - 2 * R, BH = H - 2 * R, DD = 2 * R, DD2 = DD * DD;
+const KBOX = 1 - (2 * DD / PI) * (1 / AW + 1 / BH) + DD * DD / (PI * AW * BH);
+function kTof(T) { return KT300 * T / 300; }
+function zPair(T) { return 2 * DD * Math.sqrt(PI * kTof(T) / (2 * (MA / 2))) * CHI * KBOX / (AW * BH); }
+function epsOf(Ea, T) { return Ea * 1000 / (RGAS * T); }
+function eThreshold(Ea) { return Ea * 1000 / RGAS * KT300 / 300; }
+const PG_N = 600, PG_H = 12 / PG_N;
+function pInt(eps) {
+  let s = 0;
+  for (let i = 0; i <= PG_N; i++) { const t = i * PG_H, w = (i === 0 || i === PG_N) ? 1 : (i % 2 ? 4 : 2); s += w * t * t * expf(-eps - t * t / 2); }
+  return s * PG_H / 3;
+}
+const PG0 = pInt(0);
+function pAbove(eps) { return pInt(eps) / PG0; }
+function kPair(T, Ea) { return P_ST * zPair(T) * pAbove(epsOf(Ea, T)); }
+function rate(T, Ea) { return kPair(T, Ea) * NPAIR; }
+function nBstar(T, Ea, tObs) { return Math.round(rate(T, Ea) * tObs); }
+function ratioH(nB) { return Math.floor((200 * nB + (100 + nB)) / (2 * (100 + nB))); }
+function ratioStr(nB) { const h = ratioH(nB); return Math.floor(h / 100) + '.' + (h % 100 < 10 ? '0' : '') + (h % 100); }
+function predict(s, i) {
+  const X = s.X, Y = s.Y, VX = s.VX, VY = s.VY, PT = s.PT, now = s.now;
+  const d0 = now - PT[i]; if (d0 !== 0) { X[i] += VX[i] * d0; Y[i] += VY[i] * d0; PT[i] = now; }
+  const xi = X[i], yi = Y[i], vxi = VX[i], vyi = VY[i];
+  let best = Infinity, code = -9;
+  if (vxi > 0) { best = (W - R - xi) / vxi; code = -2; } else if (vxi < 0) { best = (R - xi) / vxi; code = -1; }
+  if (vyi > 0) { const t = (H - R - yi) / vyi; if (t < best) { best = t; code = -4; } } else if (vyi < 0) { const t = (R - yi) / vyi; if (t < best) { best = t; code = -3; } }
+  if (best < 0) best = 0;
+  for (let j = 0; j < NA; j++) {
+    if (j === i) continue;
+    const dj = now - PT[j], dvx = VX[j] - vxi, dvy = VY[j] - vyi, dx = X[j] + VX[j] * dj - xi, dy = Y[j] + VY[j] * dj - yi;
+    const b = dx * dvx + dy * dvy; if (b >= 0) continue;
+    const c = dx * dx + dy * dy - DD2; if (c < 0 || c >= -2 * b * best) continue;
+    const a = dvx * dvx + dvy * dvy, disc = b * b - a * c; if (disc < 0) continue;
+    const t = c / (-b + Math.sqrt(disc));
+    if (t < best) { best = t; code = j; }
+  }
+  s.NT[i] = now + best; s.NJ[i] = code;
+}
+function refresh(s, i, j) {
+  predict(s, i); if (j >= 0) predict(s, j);
+  const NJ = s.NJ;
+  for (let m = 0; m < NA; m++) if (m !== i && m !== j && (NJ[m] === i || (j >= 0 && NJ[m] === j))) predict(s, m);
+}
+function bring(s, i) { const d = s.now - s.PT[i]; if (d !== 0) { s.X[i] += s.VX[i] * d; s.Y[i] += s.VY[i] * d; s.PT[i] = s.now; } }
+function thermal(s, i, code) {
+  const sd = s.sdA, vn = sd * Math.sqrt(-2 * lnf(1 - s.r())), vt = sd * normal(s.r);
+  if (code === -1) { s.VX[i] = vn; s.VY[i] = vt; } else if (code === -2) { s.VX[i] = -vn; s.VY[i] = vt; }
+  else if (code === -3) { s.VY[i] = vn; s.VX[i] = vt; } else { s.VY[i] = -vn; s.VX[i] = vt; }
+}
+function inject(s, i) {
+  const X = s.X, Y = s.Y, VX = s.VX, VY = s.VY, PT = s.PT, now = s.now;
+  let y = 0;
+  for (let k = 0; k < 1000; k++) {
+    y = INLET[0] + s.r() * (INLET[1] - INLET[0]);
+    let ok = true;
+    for (let j = 0; j < NA && ok; j++) { if (j === i) continue; const dj = now - PT[j], dx = X[j] + VX[j] * dj - R, dy = Y[j] + VY[j] * dj - y; if (dx * dx + dy * dy <= (DD + 0.2) * (DD + 0.2)) ok = false; }
+    if (ok) break;
+  }
+  X[i] = R; Y[i] = y; PT[i] = now; thermal(s, i, -1);
+}
+function setup(seed, T, cat, c, mode, T0) {
+  const r = rng(seed); r();
+  const X = new Float64Array(NA), Y = new Float64Array(NA), VX = new Float64Array(NA), VY = new Float64Array(NA);
+  const sd0 = Math.sqrt(kTof(T0 || T) / MA);
+  for (let i = 0; i < NA; i++) {
+    let x = 0, y = 0, ok = false;
+    for (let k = 0; k < 10000 && !ok; k++) {
+      x = R + r() * (W - 2 * R); y = R + r() * (H - 2 * R); ok = true;
+      for (let j = 0; j < i; j++) { const dx = X[j] - x, dy = Y[j] - y; if (dx * dx + dy * dy <= (DD + 0.2) * (DD + 0.2)) { ok = false; break; } }
+    }
+    if (!ok) throw Error('packing');
+    X[i] = x; Y[i] = y; VX[i] = sd0 * normal(r); VY[i] = sd0 * normal(r);
+  }
+  const Ea = cat ? c.EaC : c.EaN, rr = rate(T, Ea), ticks = Math.round(c.tObs * 60);
+  const s = { X, Y, VX, VY, PT: new Float64Array(NA), NT: new Float64Array(NA), NJ: new Int32Array(NA), r, T, cat: !!cat, mode: mode || 'sched',
+    sdA: Math.sqrt(kTof(T) / MA), now: 0, tick: 0, ticks, tObs: c.tObs, rate: rr, nBstar: Math.round(rr * c.tObs), target: 0,
+    EthN: eThreshold(c.EaN), EthC: eThreshold(c.EaC), Eth: eThreshold(Ea), EK: RGAS * 300 / (1000 * KT300),
+    nB: 0, aa: 0, qN: 0, qC: 0, wall: 0, hist: new Array(NBIN).fill(0), lagMax: 0, lagRule: 0, leadMax: 0, dpMax: 0,
+    keSum: 0, keN: 0, keOn: false, bt: new Float64Array(NBUF), bx: new Float64Array(NBUF), by: new Float64Array(NBUF), bn: 0, done: false };
+  for (let i = 0; i < NA; i++) predict(s, i);
+  return s;
+}
+function onTick(s) {
+  if (s.mode === 'sched') {
+    const x = s.rate * s.now, base = Math.round(x);
+    s.target = Math.min(s.nBstar, Math.round(x + LEAD * s.now / s.tObs));
+    if (base - s.nB > s.lagMax) s.lagMax = base - s.nB;
+    if (s.target - s.nB > s.lagRule) s.lagRule = s.target - s.nB;
+    if (s.nB - base > s.leadMax) s.leadMax = s.nB - base;
+  }
+  if (s.keOn && s.tick >= 600) { let e = 0; for (let i = 0; i < NA; i++) e += 0.5 * MA * (s.VX[i] * s.VX[i] + s.VY[i] * s.VY[i]); s.keSum += e / NA; s.keN++; }
+  if (s.tick >= s.ticks) s.done = true;
+}
+function collide(s, i) {
+  const j = s.NJ[i];
+  bring(s, i);
+  if (j < 0) { thermal(s, i, j); s.wall++; refresh(s, i, -1); return; }
+  bring(s, j);
+  const X = s.X, Y = s.Y, VX = s.VX, VY = s.VY;
+  const dx = X[j] - X[i], dy = Y[j] - Y[i], d = Math.sqrt(dx * dx + dy * dy), nx = dx / d, ny = dy / d;
+  const rel = (VX[j] - VX[i]) * nx + (VY[j] - VY[i]) * ny;
+  if (rel >= 0) { refresh(s, i, j); return; }
+  s.aa++;
+  const En = 0.25 * MA * rel * rel;
+  let b = Math.floor(En * s.EK); if (b > NBIN - 1) b = NBIN - 1; s.hist[b]++;
+  if (En >= s.EthN) s.qN++; if (En >= s.EthC) s.qC++;
+  if (En >= s.Eth && (s.mode === 'free' || (s.mode === 'sched' && s.nB < s.target))) {
+    const px = MA * (VX[i] + VX[j]), py = MA * (VY[i] + VY[j]), vbx = (VX[i] + VX[j]) / 2, vby = (VY[i] + VY[j]) / 2;
+    const dp = Math.abs(MB * vbx - px) + Math.abs(MB * vby - py); if (dp > s.dpMax) s.dpMax = dp;
+    const k = s.bn % NBUF; s.bt[k] = s.now; s.bx[k] = (X[i] + X[j]) / 2; s.by[k] = (Y[i] + Y[j]) / 2; s.bn++;
+    s.nB++; inject(s, i); inject(s, j); refresh(s, i, j); return;
+  }
+  const imp = -rel;
+  VX[i] -= imp * nx; VY[i] -= imp * ny; VX[j] += imp * nx; VY[j] += imp * ny;
+  refresh(s, i, j);
+}
+function advance(s, tEnd) {
+  const NT = s.NT; let guard = 0;
+  while (!s.done) {
+    let ie = -1, te = Infinity;
+    for (let i = 0; i < NA; i++) if (NT[i] < te) { te = NT[i]; ie = i; }
+    const tb = (s.tick + 1) / 60;
+    if (tb <= te) { if (tb > tEnd) break; s.now = tb; s.tick++; onTick(s); guard = 0; continue; }
+    if (te > tEnd) break;
+    if (++guard > 2000000) throw Error('event budget');
+    s.now = te; collide(s, ie);
+  }
+  return s;
+}
+function positions(s, t, out) {
+  for (let i = 0; i < NA; i++) { const d = t - s.PT[i]; out[2 * i] = s.X[i] + s.VX[i] * d; out[2 * i + 1] = s.Y[i] + s.VY[i] * d; }
+  return NA;
+}
+function result(s) {
+  return { T: s.T, cat: s.cat, tObs: s.tObs, aa: s.aa, eff: s.nB, nA: NA, nB: s.nB, ratio: ratioStr(s.nB), nBstar: s.nBstar,
+    endOK: s.nB === s.nBstar, lagMax: s.lagMax, lagRule: s.lagRule, leadMax: s.leadMax, qN: s.qN, qC: s.qC, wall: s.wall, hist: s.hist.slice() };
+}
+function run(seed, T, cat, c, mode, opt) {
+  const s = setup(seed, T, cat, c, mode, opt && opt.T0); if (opt && opt.ke) s.keOn = true;
+  advance(s, c.tObs + 1);
+  const out = result(s);
+  if (opt && opt.diag) Object.assign(out, { dpMax: s.dpMax, ke: s.keN ? s.keSum / s.keN : NaN, kT: kTof(T), Zm: s.aa / (NPAIR * s.tObs) });
+  return out;
+}
+function student(id, combos, code) {
+  const nid = normId(id), seed = seedOf(nid, code), ci = comboOf(nid, combos, code), c = combos[ci], rows = [];
+  for (const cat of [false, true]) for (const T of TEMPS) rows.push(run(seed, T, cat, c));
+  return { id: nid, seed, combo: ci, c, rows };
+}
+function tminOf(nBs, target) { const tg = Math.round(target * 100); for (let i = 0; i < TEMPS.length; i++) if (ratioH(nBs[i]) >= tg) return TEMPS[i]; return null; }
+const API = { DEFAULT_CODE, W, H, R, MA, MB, NA, NPAIR, KT300, RGAS, P_ST, LEAD, TEMPS, INLET, NBIN, NBUF, ETA, CHI, KBOX,
+  lnf, expf, normId, utf8, fnv1a, seedOf, rng, pickCombo, comboOf, kTof, zPair, epsOf, eThreshold, pAbove, kPair, rate, nBstar, ratioH, ratioStr,
+  setup, advance, positions, result, run, student, tminOf };
+if (typeof module !== 'undefined' && module.exports) module.exports = API;
+if (root) root.RxModel = API;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+</script>
+<script>
+const COMBOS = [[24,17,-92,0.3,70,500],[24,17,-71,0.3,70,500],[24,17,-84,0.3,70,500],[24,17,-63,0.3,70,500],[20,15,-97,0.35,55,380],[20,15,-76,0.35,55,400],[20,15,-88,0.35,55,420],[20,15,-67,0.35,55,440],[20,16,-80,0.35,55,380],[20,16,-95,0.35,55,400],[20,16,-74,0.35,55,420],[20,16,-86,0.35,55,440],[20,17,-65,0.35,55,380],[20,17,-99,0.35,55,400],[20,17,-78,0.35,55,420],[20,17,-90,0.35,55,440],[21,15,-69,0.35,55,420],[21,15,-82,0.35,55,440],[21,15,-92,0.35,55,460],[21,15,-71,0.35,55,480],[21,16,-84,0.35,55,400],[21,16,-63,0.35,55,420],[21,16,-97,0.35,55,440],[21,16,-76,0.35,55,460],[21,17,-88,0.35,55,400],[21,17,-67,0.35,55,420],[21,17,-80,0.35,55,440],[21,17,-95,0.35,55,460],[21,18,-74,0.35,55,400],[21,18,-86,0.35,55,420],[21,18,-65,0.35,55,440],[21,18,-99,0.35,55,460],[18,14,-78,0.4,50,360],[18,14,-90,0.4,50,380],[18,14,-69,0.4,50,400],[18,14,-82,0.4,50,420],[18,15,-92,0.4,50,360],[18,15,-71,0.4,50,380],[18,15,-84,0.4,50,400],[18,15,-63,0.4,50,420],[19,14,-97,0.4,50,380],[19,14,-76,0.4,50,400],[19,14,-88,0.4,50,420],[19,14,-67,0.4,50,440],[19,15,-80,0.4,50,380],[19,15,-95,0.4,50,400],[19,15,-74,0.4,50,420],[19,15,-86,0.4,50,440],[19,16,-65,0.4,50,380],[19,16,-99,0.4,50,400],[19,16,-78,0.4,50,420],[19,16,-90,0.4,50,440],[20,14,-69,0.4,50,420],[20,14,-82,0.4,50,440],[20,14,-92,0.4,50,460],[20,14,-71,0.4,50,480],[20,15,-84,0.4,50,380],[20,15,-63,0.4,50,400],[20,15,-97,0.4,50,420],[20,15,-76,0.4,50,440],[20,16,-88,0.4,50,380],[20,16,-67,0.4,50,400],[20,16,-80,0.4,50,420],[20,16,-95,0.4,50,440],[20,17,-74,0.4,50,380],[20,17,-86,0.4,50,400],[20,17,-65,0.4,50,420],[20,17,-99,0.4,50,440],[21,14,-78,0.4,50,500],[21,14,-90,0.4,50,500],[21,14,-69,0.4,50,500],[21,14,-82,0.4,50,500],[21,15,-92,0.4,50,420],[21,15,-71,0.4,50,440],[21,15,-84,0.4,50,460],[21,15,-63,0.4,50,480],[21,16,-97,0.4,50,400],[21,16,-76,0.4,50,420],[21,16,-88,0.4,50,440],[21,16,-67,0.4,50,460],[21,17,-80,0.4,50,400],[21,17,-95,0.4,50,420],[21,17,-74,0.4,50,440],[21,17,-86,0.4,50,460],[21,18,-65,0.4,50,400],[21,18,-99,0.4,50,420],[21,18,-78,0.4,50,440],[21,18,-90,0.4,50,460],[21,17,-69,0.4,65,400],[21,17,-82,0.4,65,420],[21,17,-92,0.4,65,440],[21,17,-71,0.4,65,460],[21,18,-84,0.4,65,400],[21,18,-63,0.4,65,420],[21,18,-97,0.4,65,440],[21,18,-76,0.4,65,460],[22,17,-88,0.4,65,400],[22,17,-67,0.4,65,420],[22,17,-80,0.4,65,440],[22,17,-95,0.4,65,460],[22,18,-74,0.4,65,400],[22,18,-86,0.4,65,420],[22,18,-65,0.4,65,440],[22,18,-99,0.4,65,460],[22,19,-78,0.4,65,400],[22,19,-90,0.4,65,420],[22,19,-69,0.4,65,440],[22,19,-82,0.4,65,460],[23,17,-92,0.4,65,420],[23,17,-71,0.4,65,440],[23,17,-84,0.4,65,460],[23,17,-63,0.4,65,480],[23,18,-97,0.4,65,420],[23,18,-76,0.4,65,440],[23,18,-88,0.4,65,460],[23,18,-67,0.4,65,480],[23,19,-80,0.4,65,420],[23,19,-95,0.4,65,440],[23,19,-74,0.4,65,460],[23,19,-86,0.4,65,480],[19,15,-65,0.4,70,360],[19,15,-99,0.4,70,380],[19,15,-78,0.4,70,400],[19,15,-90,0.4,70,420],[20,15,-69,0.4,70,380],[20,15,-82,0.4,70,400],[20,15,-92,0.4,70,420],[20,15,-71,0.4,70,440],[20,17,-84,0.4,70,380],[20,17,-63,0.4,70,400],[20,17,-97,0.4,70,420],[20,17,-76,0.4,70,440],[18,14,-88,0.45,60,340],[18,14,-67,0.45,60,360],[18,14,-80,0.45,60,380],[18,14,-95,0.45,60,400],[18,15,-74,0.45,60,340],[18,15,-86,0.45,60,360],[18,15,-65,0.45,60,380],[18,15,-99,0.45,60,400],[19,14,-78,0.45,60,360],[19,14,-90,0.45,60,380],[19,14,-69,0.45,60,400],[19,14,-82,0.45,60,420],[19,15,-92,0.45,60,360],[19,15,-71,0.45,60,380],[19,15,-84,0.45,60,400],[19,15,-63,0.45,60,420],[19,16,-97,0.45,60,360],[19,16,-76,0.45,60,380],[19,16,-88,0.45,60,400],[19,16,-67,0.45,60,420],[20,14,-80,0.45,60,420],[20,14,-95,0.45,60,440],[20,14,-74,0.45,60,460],[20,14,-86,0.45,60,480],[20,15,-65,0.45,60,380],[20,15,-99,0.45,60,400],[20,15,-78,0.45,60,420],[20,15,-90,0.45,60,440],[20,16,-69,0.45,60,380],[20,16,-82,0.45,60,400],[20,16,-92,0.45,60,420],[20,16,-71,0.45,60,440],[20,17,-84,0.45,60,380],[20,17,-63,0.45,60,400],[20,17,-97,0.45,60,420],[20,17,-76,0.45,60,440],[21,14,-88,0.45,60,500],[21,14,-67,0.45,60,500],[21,14,-80,0.45,60,500],[21,14,-95,0.45,60,500],[21,15,-74,0.45,60,420],[21,15,-86,0.45,60,440],[21,15,-65,0.45,60,460],[21,15,-99,0.45,60,480],[21,16,-78,0.45,60,400],[21,16,-90,0.45,60,420],[21,16,-69,0.45,60,440],[21,16,-82,0.45,60,460],[21,17,-92,0.45,60,400],[21,17,-71,0.45,60,420],[21,17,-84,0.45,60,440],[21,17,-63,0.45,60,460],[21,18,-97,0.45,60,400],[21,18,-76,0.45,60,420],[21,18,-88,0.45,60,440],[21,18,-67,0.45,60,460],[22,15,-80,0.45,60,500],[22,15,-95,0.45,60,500],[22,15,-74,0.45,60,500],[22,15,-86,0.45,60,500],[22,16,-65,0.45,60,420],[22,16,-99,0.45,60,440],[22,16,-78,0.45,60,460],[22,16,-90,0.45,60,480],[22,17,-69,0.45,60,420],[22,17,-82,0.45,60,440],[22,17,-92,0.45,60,460],[22,17,-71,0.45,60,480],[22,18,-84,0.45,60,420],[22,18,-63,0.45,60,440],[22,18,-97,0.45,60,460],[22,18,-76,0.45,60,480],[22,19,-88,0.45,60,420],[22,19,-67,0.45,60,440],[22,19,-80,0.45,60,460],[22,19,-95,0.45,60,480]];
+</script>
+
+<script>
+window.RxCalc = function () {
+  'use strict';
+  const OPS = '+−×÷', MAXLEN = 40;
+  let ex = '', out = '', done = false;
+  function parse(s) {
+    let i = 0;
+    const num = () => { const m = /^\d*\.?\d*/.exec(s.slice(i))[0]; if (!/\d/.test(m)) throw 's'; i += m.length; return +m; };
+    const fac = () => { if (s[i] === '−') { i++; return -fac(); } if (s[i] === '(') { i++; const v = sum(); if (s[i++] !== ')') throw 's'; return v; } return num(); };
+    const prod = () => { let v = fac(); while (s[i] === '×' || s[i] === '÷') { const o = s[i++], w = fac(); if (o === '÷' && w === 0) throw 'z'; v = o === '×' ? v * w : v / w; } return v; };
+    const sum = () => { let v = prod(); while (s[i] === '+' || s[i] === '−') { const o = s[i++], w = prod(); v = o === '+' ? v + w : v - w; } return v; };
+    const v = sum(); if (i !== s.length) throw 's'; return v;
+  }
+  function plain(v) {
+    let [m, e] = v.toPrecision(10).split('e'); const neg = m[0] === '-'; if (neg) m = m.slice(1);
+    const [a, b = ''] = m.split('.'), d = a + b, p = a.length + (+e || 0);
+    let s = p <= 0 ? '0.' + '0'.repeat(-p) + d : p >= d.length ? d + '0'.repeat(p - d.length) : d.slice(0, p) + '.' + d.slice(p);
+    if (s.includes('.')) s = s.replace(/0+$/, '').replace(/\.$/, '');
+    return (neg && s !== '0' ? '−' : '') + s;
+  }
+  const tailNum = () => /[\d.]*$/.exec(ex)[0], opens = () => ex.split('(').length - ex.split(')').length;
+  function fresh() { if (done) { ex = ''; out = ''; done = false; } }
+  function press(k) {
+    if (k !== '=' && !done) out = '';
+    if (k === 'C') { ex = ''; out = ''; done = false; }
+    else if (k === '⌫') { if (done) { done = false; out = ''; } else ex = ex.slice(0, -1); }
+    else if (k === '=') {
+      if (!ex || done) return;
+      const s = opens() > 0 && /[\d.)]$/.test(ex) ? ex + ')'.repeat(opens()) : ex;
+      try { const v = parse(s); if (Math.abs(v) >= 1e15) out = '수가 너무 큼'; else { out = plain(v); ex = s; done = true; } }
+      catch (err) { out = err === 'z' ? '0으로 나눌 수 없음' : '식이 완성되지 않음'; }
+    }
+    else if (k === ')') { if (!done && opens() > 0 && /[\d.)]$/.test(ex)) ex += ')'; }
+    else if (k === '(') { fresh(); if (ex.length >= MAXLEN) return; if (/[\d.)]$/.test(ex)) ex += '×'; ex += '('; }
+    else if (OPS.includes(k)) {
+      if (done) { ex = out; out = ''; done = false; }
+      if (ex.length >= MAXLEN) return;
+      const last = ex.slice(-1), prev = ex.slice(-2, -1);
+      if (!ex || last === '(') { if (k === '−') ex += k; else if (!ex) ex = '0' + k; }
+      else if (OPS.includes(last)) { if (prev && prev !== '(') ex = ex.slice(0, -1) + k; }
+      else ex += k;
+    }
+    else if (/^[\d.]$/.test(k)) {
+      fresh(); if (ex.length >= MAXLEN) return;
+      const t = tailNum();
+      if (k === '.') { if (t.includes('.')) return; if (!t) ex += /\)$/.test(ex) ? '×0' : '0'; }
+      else if (t === '0') ex = ex.slice(0, -1);
+      else if (/\)$/.test(ex)) ex += '×';
+      ex += k;
+    }
+  }
+  function put(n) {
+    if (!/^\d+(\.\d+)?$/.test(n)) return;
+    fresh(); out = '';
+    const head = ex.slice(0, ex.length - tailNum().length) + (/\)$/.test(ex) ? '×' : '');
+    if (head.length + n.length <= MAXLEN) ex = head + n;
+  }
+  function view() { return { exp: ex.replace(/([\d.)])([+−×÷])/g, '$1 $2 ') + (done ? ' =' : ''), ans: out }; }
+  return { press, put, view, parse, plain };
+};
+</script>
+<script>
+'use strict';
+(function () {
+const M = window.RxModel, $ = id => document.getElementById(id), PRACTICE = window.ME2_MODE === 'practice';
+const SELFTEST = /[?&]selftest=1/.test(location.search);
+const SLOW = 0.041, FAST = 4 * SLOW, CANVAS_FONT = 18, AUTO_MS = 8000;
+const ML = 90, MT = 48, GAP = 80, TW = 100, LW = ML + M.W + GAP + TW + 10, LH = MT + M.H + 10;
+const OUT_Y = (M.INLET[0] + M.INLET[1]) / 2, TANK_FULL = 200;
+const combos = COMBOS.map(a => ({ EaN: a[0], EaC: a[1], dH: a[2], target: a[3], tObs: a[4], Tref: a[5] }));
+const pos = new Float64Array(2 * M.NA), drawn = {};
+const log = new Map();
+let seed = 0, v = null, s = null, sv = null, rate = 0, tShow = 0, finishing = false, lastHist = -1, lastT = 0, autoEnd = 0;
+let selT = 0, selCat = false, fresh = true, got = false, pendId = '';
+window.__sim = { SLOW, FAST, CANVAS_FONT, drawn };
+
+function busy() { return !!s && !s.done && finishing; }
+function sync() {
+  const b = busy();
+  for (const el of $('temps').children) { el.disabled = b; el.classList.toggle('on', +el.dataset.t === selT); }
+  for (const el of $('cats').children) { el.disabled = b; el.classList.toggle('on', (el.dataset.cat === '1') === selCat); }
+  for (const id of ['rend', 'rslow']) $(id).disabled = !s || finishing;
+  $('rslow').textContent = rate === SLOW ? '멈춤' : '천천히 보기'; $('rslow').classList.toggle('on', rate === SLOW);
+}
+function pick(T, cat) {
+  if (busy() || (s && T === selT && cat === selCat)) return;
+  selT = T; selCat = cat;
+  if (selT) newRun(); else sync();
+}
+function newRun() {
+  s = M.setup(seed, selT, selCat, v); sv = M.setup(seed, selT, selCat, v); tShow = 0; rate = 0; finishing = false; lastHist = -1; fresh = true; got = false;
+  $('cond').textContent = selT + ' K · 촉매 ' + (selCat ? '있음' : '없음');
+  setStatus('준비'); paint(); stats(); hist();
+}
+function setStatus(t) { $('status').textContent = t; sync(); }
+function check() {
+  if ($('go').disabled) return;
+  const id = M.normId($('sid').value);
+  if (!id) { $('msg').textContent = '학번 입력 필요'; return; }
+  pendId = id; $('msg').textContent = ''; $('idbig').textContent = id; $('s1').hidden = true; $('s2').hidden = false;
+}
+function reenter() { $('s2').hidden = true; $('s1').hidden = false; $('sid').focus(); $('sid').select(); }
+function begin() {
+  const id = pendId, old = load(id);
+  $('who').textContent = (PRACTICE ? '연습 · ' : '학번 ') + id;
+  if (old && old.done && !PRACTICE) { $('start').hidden = true; $('s2').hidden = true; $('s1').hidden = false; showDone(old); return; }
+  seed = M.seedOf(id); v = combos[M.comboOf(id, combos)];
+  $('i-dh').textContent = '−' + (-v.dH); $('i-ean').textContent = v.EaN; $('i-eac').textContent = v.EaC;
+  $('i-tobs').textContent = v.tObs; $('i-tg').textContent = v.target.toFixed(2); $('i-tref').textContent = v.Tref;
+  s = null; sv = null; selT = 0; selCat = false; rate = 0; finishing = false; fresh = true; got = false; log.clear();
+  curId = id; sheet = blank(); started = new Date().toISOString(); sec = 1;
+  if (old) { sheet = old.sheet; started = old.started || started; for (const r of old.runs || []) log.set(r.T + (r.cat ? '+' : '-'), { T: r.T, cat: r.cat, aa: r.aa, nB: r.nB, times: r.times || 1 }); }
+  hs = [JSON.stringify(sheet)]; hi = 0; lastKey = null; pend = null; drawLog();
+  $('start').hidden = true; $('s2').hidden = true; $('s1').hidden = PRACTICE; $('lab').hidden = false; $('home').hidden = PRACTICE; $('calcbtn').hidden = false;
+  showSec(1); render(); if (!(old && old.done)) save(); tick(); note(old ? '이어서 씀 · 이 PC 에 남은 기록을 불러옴' : '', 10000);
+  $('cond').textContent = ''; fit(); paint(); hist(); stats(); setStatus('준비');
+  
+}
+function home() {
+  if (!confirm('처음 화면으로 돌아갈까요?\n쓴 기록 · 실험 목록은 이 PC 에 남음\n같은 학번으로 다시 들어오면 이어서 씀')) return;
+  save(); rate = 0; finishing = false; s = null; log.clear(); drawLog(); curId = ''; pend = null; note('');
+  calcOpen(false); calc.press('C'); cshow(); $('calcbtn').hidden = true; $('clock').textContent = '';
+  $('lab').hidden = true; $('start').hidden = false; $('home').hidden = true; $('who').textContent = ''; $('sid').value = ''; $('sid').focus();
+}
+
+const box = $('box'), bx = box.getContext('2d'), hc = $('hist'), hx = hc.getContext('2d');
+let sc = 1, ox = 0, oy = 0;
+function fit() {
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  for (const c of [box, hc]) { const w = c.clientWidth, h = c.clientHeight; if (w && h) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); c.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0); } }
+  sc = Math.min(box.clientWidth / LW, box.clientHeight / LH); ox = (box.clientWidth - LW * sc) / 2; oy = (box.clientHeight - LH * sc) / 2;
+  if (s) { paint(); hist(); }
+}
+const PX = x => ox + (ML + x) * sc, PY = y => oy + (MT + M.H - y) * sc;
+function text(g, key, t, x, y, align, base) {
+  const w = g.measureText(t).width, cw = g.canvas.clientWidth, ch = g.canvas.clientHeight;
+  const x0 = Math.max(0, Math.min(cw - w, align === 'center' ? x - w / 2 : align === 'right' ? x - w : x)), y0 = Math.max(0, Math.min(ch - CANVAS_FONT, base === 'middle' ? y - CANVAS_FONT / 2 : base === 'bottom' ? y - CANVAS_FONT : y));
+  g.textAlign = 'left'; g.textBaseline = 'top'; g.fillText(t, x0, y0);
+  drawn[key] = { t, x0, x1: x0 + w, y0, y1: y0 + CANVAS_FONT, cw, ch };
+}
+function arrow(x0, y, x1, col) {
+  bx.strokeStyle = col; bx.fillStyle = col; bx.lineWidth = 3; bx.beginPath(); bx.moveTo(x0, y); bx.lineTo(x1 - 8, y); bx.stroke();
+  bx.beginPath(); bx.moveTo(x1, y); bx.lineTo(x1 - 10, y - 6); bx.lineTo(x1 - 10, y + 6); bx.closePath(); bx.fill();
+}
+function paint() {
+  const w = box.clientWidth, h = box.clientHeight, s = sv; bx.clearRect(0, 0, w, h);
+  if (!s || !w) return;
+  const t = s.done ? s.now : tShow, r = M.R * sc, X0 = PX(0), Y0 = PY(M.H), BW = M.W * sc, BH = M.H * sc;
+  bx.font = CANVAS_FONT + 'px "Malgun Gothic",sans-serif'; bx.fillStyle = '#46505e';
+  arrow(ox + 10 * sc, PY(OUT_Y), X0 - 4, '#2f6fd0');
+  bx.fillStyle = '#2f6fd0'; text(bx, 'inlet', '공급구', 0, Y0 - 4, 'left', 'bottom');
+  const TX = PX(M.W + GAP), TY = Y0, TH = BH, tl = '회수 탱크 · B ' + s.nB + '개', tlw = bx.measureText(tl).width, ow = bx.measureText('회수구').width;
+  arrow(X0 + BW + 4, PY(OUT_Y), TX - 4, '#e07b1a');
+  bx.fillStyle = '#9a4f0c'; text(bx, 'outlet', '회수구', Math.min(X0 + BW + GAP * sc / 2 + ow / 2, w - tlw - 12), Y0 - 4, 'right', 'bottom');
+  const lv = Math.min(1, s.nB / TANK_FULL) * TH;
+  bx.fillStyle = 'rgba(224,123,26,0.55)'; bx.fillRect(TX, TY + TH - lv, TW * sc, lv);
+  bx.strokeStyle = '#5b6675'; bx.lineWidth = 2; bx.strokeRect(TX, TY, TW * sc, TH);
+  bx.fillStyle = '#1d2430'; text(bx, 'tank', tl, w, Y0 - 4, 'right', 'bottom');
+  bx.strokeStyle = '#5b6675'; bx.lineWidth = 2; bx.strokeRect(X0, Y0, BW, BH);
+  window.__sim.geom = { frame: [X0, Y0, BW, BH], wall: [PX(0), PY(M.H), M.W * sc, M.H * sc], sc };
+  bx.lineWidth = 5; bx.strokeStyle = '#2f6fd0'; bx.beginPath(); bx.moveTo(X0, PY(M.INLET[0])); bx.lineTo(X0, PY(M.INLET[1])); bx.stroke();
+  bx.strokeStyle = '#e07b1a'; bx.beginPath(); bx.moveTo(X0 + BW, PY(OUT_Y - 20)); bx.lineTo(X0 + BW, PY(OUT_Y + 20)); bx.stroke();
+  M.positions(s, t, pos);
+  bx.beginPath();
+  for (let i = 0; i < M.NA; i++) { const x = PX(pos[2 * i]), y = PY(pos[2 * i + 1]); bx.moveTo(x + r, y); bx.arc(x, y, r, 0, 6.2832); }
+  bx.fillStyle = '#2f6fd0'; bx.fill(); bx.lineWidth = 1; bx.strokeStyle = '#1b4a91'; bx.stroke();
+  const tau = Math.max(rate, SLOW) * 0.8;
+  if (!s.done) {
+    bx.beginPath();
+    for (let k = 0; k < Math.min(s.bn, M.NBUF); k++) {
+      const age = t - s.bt[k]; if (age < 0 || age > tau) continue;
+      const f = age / tau, x = s.bx[k] + (M.W + GAP / 2 - s.bx[k]) * f, y = s.by[k] + (OUT_Y - s.by[k]) * f, px = PX(x), py = PY(y);
+      bx.moveTo(px + r * 1.2, py); bx.arc(px, py, r * 1.2, 0, 6.2832);
+    }
+    bx.fillStyle = '#e07b1a'; bx.fill(); bx.strokeStyle = '#9a4f0c'; bx.stroke();
+  }
+}
+function fmt(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+function stats() {
+  const t = !s ? 0 : got ? s.tObs : finishing ? s.now : tShow, scene = !!sv && tShow > 0;
+  $('o-t').textContent = t.toFixed(1) + ' 초'; $('bar').style.width = (s ? 100 * t / s.tObs : 0) + '%';
+  const put = (id, f) => { $(id).textContent = got ? f() : '—'; };
+  put('o-aa', () => fmt(s.aa)); put('o-eff', () => fmt(s.nB)); put('o-na', () => M.NA); put('o-nb', () => fmt(s.nB)); put('o-r', () => M.ratioStr(s.nB));
+  $('rcond').textContent = !s ? '· 온도를 고르고 「실험하기」' : got ? s.T + ' K · 촉매 ' + (s.cat ? '있음' : '없음')
+    : finishing ? '계산 중' : fresh ? '· 새 조건 · 「실험하기」 누름' : sv.done ? '· 장면 끝 · 값은 「실험하기」 로' : '· 장면 보는 중 · 값은 「실험하기」 로';
+  $('scene').textContent = scene ? '장면 ' + tShow.toFixed(1) + ' / ' + sv.tObs + ' 초 · B ' + fmt(sv.nB) + '개' : '';
+  $('tail').textContent = got ? 'Ea(촉매 없음)보다 큰 충돌 수 ' + fmt(s.qN) + '회 · Ea(촉매 있음)보다 큰 충돌 수 ' + fmt(s.qC) + '회' : '';
+}
+function record() {
+  const k = s.T + (s.cat ? '+' : '-'); log.set(k, { T: s.T, cat: s.cat, aa: s.aa, nB: s.nB, times: (log.has(k) ? log.get(k).times : 0) + 1 }); drawLog(k); save(); counts();
+  showNew();
+}
+function showNew() {
+  const tr = $('logb').querySelector('tr.new'), w = $('logwrap'); if (tr) tr.scrollIntoView({ block: 'nearest' });
+  const hb = w.querySelector('th').getBoundingClientRect().bottom, rs = [...$('logb').rows].map(r => r.getBoundingClientRect()), r0 = rs.find(q => q.bottom > hb + 0.5);
+  if (!r0 || hb - r0.top < 0.5) return;
+  const st = w.scrollTop, dn = r0.bottom - hb;
+  if (tr && tr.getBoundingClientRect().top - dn >= hb - 0.5) { w.scrollTop = st + dn; if (w.scrollTop >= st + dn - 0.5) return; }
+  w.scrollTop = st - (hb - r0.top);
+}
+function drawLog(nk) {
+  const rows = [...log.entries()].sort((a, b) => a[1].cat - b[1].cat || a[1].T - b[1].T);
+  $('logb').innerHTML = rows.length ? rows.map(([k, r], i) => '<tr class="' + (i && r.cat && !rows[i - 1][1].cat ? 'grp ' : '') + (k === nk ? 'new' : '') + '"><td>' + r.T + ' K</td><td>' + (r.cat ? '있음' : '없음') +
+    '</td><td>' + fmt(r.aa) + '</td><td>' + fmt(r.nB) + '</td><td>' + fmt(r.nB) + '</td><td>' + M.ratioStr(r.nB) + '</td></tr>').join('') : '<tr><td colspan="6">실험하면 여기에 한 줄씩 남음</td></tr>';
+}
+function hist() {
+  const w = hc.clientWidth, h = hc.clientHeight, g = got ? s : sv; hx.clearRect(0, 0, w, h);
+  if (!g || !w) return;
+  hx.font = CANVAS_FONT + 'px "Malgun Gothic",sans-serif';
+  const xmax = Math.max(40, v.EaN + 6); let top = 1; for (let i = 0; i < xmax; i++) top = Math.max(top, g.hist[i]);
+  const L = hx.measureText(fmt(top)).width + 14, B = CANVAS_FONT + 10, pw = w - L - 12, ph = h - B - 8;
+  const X = e => L + pw * e / xmax, Y = c => 8 + ph - ph * c / top;
+  hx.fillStyle = 'rgba(176,58,46,0.10)'; hx.fillRect(X(v.EaN), 8, X(xmax) - X(v.EaN), ph);
+  hx.fillStyle = 'rgba(31,95,191,0.10)'; hx.fillRect(X(v.EaC), 8, X(v.EaN) - X(v.EaC), ph);
+  hx.fillStyle = '#5a7fb8';
+  for (let i = 0; i < xmax; i++) if (g.hist[i]) { const y = Y(g.hist[i]); hx.fillRect(X(i) + 0.5, y, Math.max(1, X(i + 1) - X(i) - 1), 8 + ph - y); }
+  hx.strokeStyle = '#20262e'; hx.lineWidth = 2; hx.setLineDash([]); hx.beginPath(); hx.moveTo(L, 8); hx.lineTo(L, 8 + ph); hx.lineTo(L + pw, 8 + ph); hx.stroke();
+  hx.fillStyle = '#46505e';
+  for (let e = 0; e <= xmax; e += 10) text(hx, 'x' + e, String(e), X(e), 8 + ph + 4, 'center', 'top');
+  text(hx, 'ymax', fmt(top), L - 6, 8 + CANVAS_FONT / 2, 'right', 'middle');
+  for (const [e, col, dash, lab, al] of [[v.EaN, '#b03a2e', [], 'Ea(촉매 없음)', 'left'], [v.EaC, '#1f5fbf', [8, 6], 'Ea(촉매 있음)', 'right']]) {
+    hx.strokeStyle = col; hx.lineWidth = 3; hx.setLineDash(dash); hx.beginPath(); hx.moveTo(X(e), 8); hx.lineTo(X(e), 8 + ph); hx.stroke(); hx.setLineDash([]);
+    const lw = hx.measureText(lab).width, low = al === 'right' && X(e) - 6 - lw < drawn.ymax.x1 + 12, side = low && X(e) - 6 - lw < L + 4 ? 'left' : al;
+    hx.fillStyle = col; text(hx, lab, lab, X(e) + (side === 'left' ? 6 : -6), low ? 10 + CANVAS_FONT + 8 : 10, side, 'top');
+  }
+  lastHist = g.aa;
+}
+function frame(now) {
+  const dt = Math.min(0.1, Math.max(0, (now - lastT) / 1000)); lastT = now;
+  if (s && finishing) {
+    const t0 = performance.now(); while (!s.done && performance.now() - t0 < 12) M.advance(s, s.now + 0.05);
+    if (s.done) { finishing = false; got = true; record(); sv = M.setup(seed, s.T, s.cat, v); tShow = 0; rate = FAST; autoEnd = now + AUTO_MS; hist(); paint(); setStatus('끝'); }
+    stats();
+  } else if (sv && rate > 0) {
+    tShow = Math.min(sv.tObs, tShow + rate * dt); M.advance(sv, tShow);
+    if (sv.done) { rate = 0; setStatus(got ? '끝' : '장면 끝'); }
+    else if (rate === FAST && now >= autoEnd) { rate = 0; sync(); }
+    paint(); stats(); if (!got && (sv.aa - lastHist >= Math.max(20, sv.aa * 0.02) || sv.done)) hist();
+  }
+  requestAnimationFrame(frame);
+}
+function slowPlay() {
+  if (!s || finishing) return;
+  if (rate === SLOW) { rate = 0; setStatus('멈춤'); return; }
+  if (sv.done) { sv = M.setup(seed, s.T, s.cat, v); tShow = 0; hist(); }
+  rate = SLOW; fresh = false; stats(); setStatus('천천히 재생 중');
+}
+function finish() { if (!s) return; if (s.done) newRun(); rate = 0; finishing = true; fresh = false; stats(); setStatus('계산 중'); }
+
+for (const T of M.TEMPS) { const b = document.createElement('button'); b.type = 'button'; b.dataset.t = T; b.textContent = T + ' K'; b.onclick = () => pick(T, selCat); $('temps').appendChild(b); }
+for (const b of $('cats').children) b.onclick = () => pick(selT, b.dataset.cat === '1');
+$('go').onclick = check; $('sid').onkeydown = e => { if (e.key === 'Enter') check(); };
+$('ok').onclick = begin; $('redo').onclick = reenter;
+$('home').onclick = home; $('rslow').onclick = slowPlay; $('rend').onclick = finish;
+{ const ro = new ResizeObserver(fit); ro.observe($('boxwrap')); ro.observe($('histwrap')); }
+
+const calc = window.RxCalc(), KMAP = { '*': '×', '/': '÷', '-': '−', 'Enter': '=', '=': '=', 'Backspace': '⌫', 'Escape': 'C' };
+function cshow() { const w = calc.view(); $('cexp').textContent = w.exp; $('cans').textContent = w.ans; $('cexp').scrollLeft = $('cans').scrollLeft = 1e6; }
+function cpress(k) { calc.press(k); cshow(); }
+function calcOpen(on) { $('calc').hidden = !on; $('lab').classList.toggle('calcon', on); $('calcbtn').classList.toggle('on', on); $('calcbtn').textContent = on ? '계산기 닫기' : '계산기'; }
+for (const k of '789÷456×123−0.=+()⌫C') {
+  const b = document.createElement('button'); b.type = 'button'; b.textContent = k; b.dataset.k = k;
+  if ('÷×−+()'.includes(k)) b.className = 'op'; if (k === '=') b.className = 'eq'; if (k === '⌫') b.setAttribute('aria-label', '지우기');
+  b.onclick = () => cpress(k); $('ckeys').appendChild(b);
+}
+$('calcbtn').onclick = () => calcOpen($('calc').hidden); $('cclose').onclick = () => calcOpen(false);
+const typing = el => !!el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable);
+document.addEventListener('keydown', e => {
+  if ($('calc').hidden || typing(document.activeElement) || typing(e.target) || e.isComposing || e.keyCode === 229 || e.defaultPrevented || e.ctrlKey || e.altKey || e.metaKey) return;
+  const k = /^Numpad\d$/.test(e.code) ? e.code.slice(6) : e.code === 'NumpadDecimal' ? '.' : KMAP[e.key] || (/^[\d.+()]$/.test(e.key) ? e.key : '');
+  if (!k) return;
+  e.preventDefault(); cpress(k);
+  const b = $('ckeys').querySelector('[data-k="' + k + '"]'); b.classList.add('hit'); setTimeout(() => b.classList.remove('hit'), 150);
+});
+const noSpace = e => { if ((e.key === ' ' || e.code === 'Space') && $('calc').contains(document.activeElement)) e.preventDefault(); };
+document.addEventListener('keydown', noSpace); document.addEventListener('keyup', noSpace);
+function cput(e) {
+  if ($('calc').hidden) return;
+  const el = e.target.closest('.tile, td'); if (!el || el.matches('td:nth-child(2), td[colspan]')) return;
+  const m = (el.matches('.tile') ? el.querySelector('.v') : el).textContent.replace(/,/g, '').match(/\d+(\.\d+)?/);
+  if (!m) return;
+  calc.put(m[0]); cshow(); el.animate([{ backgroundColor: '#ffd966' }], 600);
+}
+$('c4').addEventListener('click', cput); $('logb').addEventListener('click', cput);
+
+const svg = $('g3'), NS = svg.namespaceURI, T5 = M.TEMPS.map(String), STORE = 'ME2-rec';
+const AN = { EaN: 'Ea(촉매 없음)', EaC: 'Ea(촉매 있음)', dH: 'ΔH' }, ACOL = { EaN: '#b03a2e', EaC: '#1f5fbf', dH: '#1d7a46' };
+const HN = { R: '반응물', TSn: '봉우리(촉매 없음)', TSc: '봉우리(촉매 있음)', P: '생성물' }, HX = { R: 0.08, TSn: 0.33, TSc: 0.67, P: 0.92 };
+const GP = { l: 36, r: 14, b: 62, top: 28 };
+let sheet = null, hs = [], hi = 0, lastKey = null, sec = 1, started = '', curId = '', pend = null, drag = null, lastField = null, noteT = 0;
+function blank() {
+  const o = () => Object.fromEntries(T5.map(t => [t, '']));
+  return { s1: { dH: '', EaN: '', EaC: '', tObs: '', target: '', Tref: '' },
+    s2: { no: { aa: '', eff: '', nB: '', ratio: '' }, cat: { aa: '', eff: '', nB: '', ratio: '' } },
+    s3: { levels: { R: 50, P: 50, TSn: 50, TSc: 50 }, arrows: { EaN: null, EaC: null, dH: null } },
+    s4: { basis: [], formula: '', sub: '', ans: '' },
+    s5: { no: o(), cat: o(), tminN: '', tminC: '' },
+    s6: { ga: '', na: '', da: '' } };
+}
+sheet = blank();
+function merge(a, b) { for (const k in a) if (b && typeof b === 'object' && k in b) { if (a[k] && typeof a[k] === 'object' && !Array.isArray(a[k])) merge(a[k], b[k]); else a[k] = b[k]; } return a; }
+const getP = p => p.split('.').reduce((o, k) => o == null ? o : o[k], sheet);
+function setP(p, val) { const ks = p.split('.'), last = ks.pop(), o = ks.reduce((a, k) => a == null ? a : a[k], sheet); if (o) o[last] = val; }
+const skey = id => STORE + ':' + (PRACTICE ? 'practice' : 'eval') + ':' + window.ME2_EVAL_CODE + ':' + id;
+function runs() { return [...log.values()].sort((a, b) => a.cat - b.cat || a.T - b.T).map(r => ({ T: r.T, cat: r.cat, aa: r.aa, eff: r.nB, nB: r.nB, ratio: M.ratioStr(r.nB), times: r.times || 1 })); }
+function save() {
+  if (!curId) return;
+  try { localStorage.setItem(skey(curId), JSON.stringify({ format: 'ME2-save-1', mode: PRACTICE ? 'practice' : 'eval', id: curId, code: window.ME2_EVAL_CODE, started, saved: new Date().toISOString(), sheet, runs: runs() })); }
+  catch (err) { note('이 PC 에 저장 안 됨 · 손 들기', 8000); }
+}
+function load(id) {
+  try { const o = JSON.parse(localStorage.getItem(skey(id)) || 'null'); if (o && o.done && !o.sheet) return o; if (!o || !o.sheet) return null; o.sheet = merge(blank(), o.sheet); return o; }
+  catch (err) { return null; }
+}
+function note(t, ms) { $('note2').textContent = t; clearTimeout(noteT); if (t) noteT = setTimeout(() => { $('note2').textContent = ''; }, ms || 4000); }
+function tick() { $('clock').textContent = curId && started ? '시작 뒤 ' + Math.max(0, Math.floor((Date.now() - Date.parse(started)) / 60000)) + '분' : ''; }
+setInterval(tick, 10000);
+
+function commit(k) {
+  const snap = JSON.stringify(sheet);
+  if (snap !== hs[hi]) {
+    if (k && k === lastKey && hi > 0 && hi === hs.length - 1) hs[hi] = snap;
+    else { hs.splice(hi + 1); hs.push(snap); if (hs.length > 400) hs.shift(); hi = hs.length - 1; }
+    save();
+  }
+  lastKey = k; render();
+}
+function undo() { if (hi > 0) { hi--; sheet = JSON.parse(hs[hi]); lastKey = null; pend = null; save(); render(); } }
+function redo() { if (hi < hs.length - 1) { hi++; sheet = JSON.parse(hs[hi]); lastKey = null; pend = null; save(); render(); } }
+const filled = x => String(x == null ? '' : x).trim() !== '';
+function counts() {
+  const S = sheet, vals = o => Object.values(o).filter(filled).length;
+  const n = [vals(S.s1), vals(S.s2.no) + vals(S.s2.cat), Object.values(S.s3.arrows).filter(a => a && filled(a.value)).length,
+    (S.s4.basis.length ? 1 : 0) + ['formula', 'sub', 'ans'].filter(k => filled(S.s4[k])).length,
+    vals(S.s5.no) + vals(S.s5.cat) + [S.s5.tminN, S.s5.tminC].filter(filled).length, vals(S.s6)];
+  const d = [6, 8, 3, 4, PRACTICE ? [...log.values()].filter(r => !r.cat).length + 1 : log.size + 2, PRACTICE ? 1 : 3];
+  [...$('tabs').children].forEach((b, i) => { b.querySelector('.n').textContent = n[i] + '/' + d[i]; });
+}
+function render() {
+  for (const el of document.querySelectorAll('#sheet [data-f]')) {
+    const p = el.dataset.f, val = getP(p), t = val == null ? '' : String(val);
+    if (p.startsWith('s3.arrows.')) el.disabled = !sheet.s3.arrows[p.split('.')[2]];
+    if (el.value !== t) el.value = t;
+  }
+  for (const b of document.querySelectorAll('#sheet [data-b]')) b.setAttribute('aria-pressed', String(sheet.s4.basis.includes(b.dataset.b)));
+  for (const b of document.querySelectorAll('.abtn')) { const a = b.dataset.a; b.textContent = (sheet.s3.arrows[a] ? '✓ ' : '') + AN[a]; b.classList.toggle('on', !!pend && pend.a === a); }
+  for (const b of document.querySelectorAll('.adel')) b.disabled = !sheet.s3.arrows[b.dataset.a];
+  $('undo').disabled = hi <= 0; $('again').disabled = hi >= hs.length - 1;
+  hint(); drawGraph(); counts(); grow6();
+}
+function grow6() {
+  if (sec !== 6) return;
+  const sb = $('sbody'), st = sb.scrollTop;
+  for (const t of document.querySelectorAll('.g6 textarea')) { t.style.flex = 'none'; t.style.height = '0'; t.style.height = t.scrollHeight + 4 + 'px'; t.style.flex = ''; }
+  sb.scrollTop = st;
+}
+function keep(el) {
+  const sb = $('sbody'), lb = el.id && document.querySelector('label[for="' + el.id + '"]'); if (!lb) return;
+  const B = sb.getBoundingClientRect(), d1 = el.getBoundingClientRect().bottom + 4 - B.bottom; if (d1 > 0) sb.scrollTop += d1;
+  const k = stk(el), d2 = Math.max(B.top, k ? k.bottom : 0) + 2 - lb.getBoundingClientRect().top; if (d2 > 0) sb.scrollTop -= d2 + 4;
+}
+function stk(el) {
+  const s = el.closest('.sec'), b = s && s.querySelector('.stk');
+  return b && !b.contains(el) ? b.getBoundingClientRect() : null;
+}
+function showSec(i) {
+  sec = Math.max(1, Math.min(6, i)); pend = null;
+  for (const el of document.querySelectorAll('.sec')) el.hidden = +el.dataset.s !== sec;
+  [...$('tabs').children].forEach((b, k) => { b.classList.toggle('on', k + 1 === sec); b.setAttribute('aria-current', k + 1 === sec ? 'step' : 'false'); });
+  $('lab').classList.toggle('nolog', sec === 1 || sec === 3 || sec === 6); $('lab').classList.toggle('s4', sec === 4); $('lab').classList.toggle('s2', sec === 2);
+  $('prev').disabled = sec === 1; $('next').disabled = sec === 6; $('sbody').scrollTop = 0; render();
+}
+for (let i = 1; i <= 6; i++) { const b = document.createElement('button'); b.type = 'button'; b.innerHTML = '[' + i + '] <span class="n"></span>'; b.onclick = () => showSec(i); $('tabs').appendChild(b); }
+(function () {
+  const g = $('g5'), cell = (tag, cls, html, c1, r1, c2, r2) => { const el = document.createElement(tag); if (cls) el.className = cls; if (html) el.innerHTML = html; el.style.cssText = '--c1:' + c1 + ';--r1:' + r1 + ';--c2:' + c2 + ';--r2:' + r2; g.appendChild(el); return el; };
+  const at = i => [(i % 6) + 2, i < 6 ? 0 : 3];
+  for (const [blk, r0] of [[0, 0], [1, 3]]) { const x = blk ? ' x2' : ''; cell('span', 'lab' + x, '온도(K)', 1, 1, 1, r0 + 1); cell('span', 'lab rl' + x, '촉매<br>없음', 1, 2, 1, r0 + 2); if (!PRACTICE) cell('span', 'lab rl' + x, '촉매<br>있음', 1, 3, 1, r0 + 3); }
+  T5.forEach((t, i) => { const [c2, r0] = at(i); cell('span', 'lab', t, i + 2, 1, c2, r0 + 1); });
+  for (const [k, r, nm] of PRACTICE ? [['no', 2, '없음']] : [['no', 2, '없음'], ['cat', 3, '있음']]) T5.forEach((t, i) => {
+    const [c2, r0] = at(i), el = cell('input', '', '', i + 2, r, c2, r0 + r); el.dataset.f = 's5.' + k + '.' + t; el.setAttribute('aria-label', '촉매 ' + nm + ' ' + t + ' K 생성물 비율');
+  });
+})();
+for (const bar of document.querySelectorAll('.syms')) for (const t of bar.dataset.k.split(' ')) {
+  const b = document.createElement('button'); b.type = 'button'; b.textContent = t; b.tabIndex = -1; b.dataset.sym = t;
+  b.addEventListener('mousedown', e => e.preventDefault());
+  b.onclick = () => {
+    const box = b.closest('.sec'), f = lastField && box.contains(lastField) && lastField.tagName === 'TEXTAREA' ? lastField : box.querySelector('textarea');
+    f.focus(); f.setRangeText(t, f.selectionStart, f.selectionEnd, 'end'); f.dispatchEvent(new Event('input', { bubbles: true }));
+  };
+  bar.appendChild(b);
+}
+for (const el of document.querySelectorAll('#sheet [data-f]')) { el.placeholder = ' '; el.autocomplete = 'off'; el.spellcheck = false; }
+const sh = $('sheet');
+sh.addEventListener('input', e => { const el = e.target; if (!el.dataset || !el.dataset.f || !getP(el.dataset.f.split('.').slice(0, -1).join('.'))) return; setP(el.dataset.f, el.value); commit('f:' + el.dataset.f); if (el.closest('.g6')) keep(el); });
+sh.addEventListener('focusin', e => {
+  if (!typing(e.target)) return;
+  lastField = e.target; const el = e.target;
+  requestAnimationFrame(() => keep(el));
+});
+new ResizeObserver(grow6).observe($('sbody'));
+sh.addEventListener('focusout', () => { lastKey = null; });
+sh.addEventListener('beforeinput', e => { if (/^insertFrom/.test(e.inputType)) { e.preventDefault(); note('붙여넣기 안 됨 · 직접 입력'); } });
+const block = e => { if (e.target.closest && e.target.closest('#sheet')) { e.preventDefault(); note('붙여넣기 안 됨 · 직접 입력'); } };
+document.addEventListener('paste', block, true); document.addEventListener('drop', block, true);
+sh.addEventListener('keydown', e => {
+  const el = e.target;
+  if (e.key !== 'Enter' || el.tagName !== 'INPUT' || e.isComposing || e.keyCode === 229) return;
+  e.preventDefault();
+  const list = [...document.querySelectorAll('.sec:not([hidden]) [data-f]')].filter(x => !x.disabled), i = list.indexOf(el);
+  (list[i + 1] || $('next')).focus();
+});
+document.addEventListener('keydown', e => {
+  if (!(e.ctrlKey || e.metaKey) || e.altKey || $('lab').hidden || $('lab').inert || typing(e.target)) return;
+  const z = e.code === 'KeyZ', y = e.code === 'KeyY';
+  if (!z && !y) return;
+  e.preventDefault(); if (y || e.shiftKey) redo(); else undo();
+});
+for (const b of document.querySelectorAll('#sheet [data-b]')) b.onclick = () => { sheet.s4.basis = [b.dataset.b]; commit(null); };
+$('prev').onclick = () => showSec(sec - 1); $('next').onclick = () => showSec(sec + 1);
+$('undo').onclick = undo; $('again').onclick = redo;
+
+function ovl(id, on) {
+  $(id).hidden = !on;
+  const any = !!document.querySelector('.ovl:not([hidden])');
+  $('lab').inert = any; document.querySelector('header').inert = any;
+}
+function empties() {
+  const S = sheet, nb = o => Object.values(o).filter(x => !filled(x)).length, r5 = [...log.values()].filter(r => !PRACTICE || !r.cat);
+  return [nb(S.s1), nb(S.s2.no) + nb(S.s2.cat), Object.values(S.s3.arrows).filter(a => !a || !filled(a.value)).length,
+    (S.s4.basis.length ? 0 : 1) + ['formula', 'sub', 'ans'].filter(k => !filled(S.s4[k])).length,
+    r5.filter(r => !filled(S.s5[r.cat ? 'cat' : 'no'][String(r.T)])).length + (PRACTICE ? [S.s5.tminN] : [S.s5.tminN, S.s5.tminC]).filter(x => !filled(x)).length,
+    (PRACTICE ? [S.s6.ga] : Object.values(S.s6)).filter(x => !filled(x)).length];
+}
+function askSubmit() {
+  if (!curId) return;
+  calcOpen(false); pend = null; render();
+  $('cfn').innerHTML = empties().map((n, i) => '<span' + (n ? ' class="e"' : '') + '>[' + (i + 1) + '] 빈 칸 ' + n + '</span>').join('');
+  ovl('cf', true); $('cfback').focus();
+}
+function payload() {
+  return { format: 'ME2-submit-1', mode: PRACTICE ? 'practice' : 'eval', id: curId, code: window.ME2_EVAL_CODE, pc: pcid(), started, submitted: new Date().toISOString(),
+    sheet: JSON.parse(JSON.stringify(sheet)), runs: runs() };
+}
+const pcNew = () => Array.from(crypto.getRandomValues(new Uint8Array(8)), b => 'abcdefghijkmnpqrstuvwxyz23456789'[b & 31]).join('');
+function pcid() { try { let v = localStorage.getItem('ME2-pc'); if (!/^[a-z2-9]{8}$/.test(v || '')) { v = pcNew(); localStorage.setItem('ME2-pc', v); } return v; } catch (err) { return pcNew(); } }
+const gas = () => !!(window.google && google.script && google.script.run);
+const API = window.ME2_API || '';
+const served = () => gas() || !!API || location.protocol === 'http:' || location.protocol === 'https:';
+function gpost(fire) {
+  return new Promise((ok, no) => {
+    let k = 0, end = false, t = 0;
+    const win = o => { if (!end) { end = true; clearTimeout(t); ok(o); } };
+    const go = () => {
+      const me = ++k; let over = false;
+      const miss = () => { if (end || over) return; over = true; clearTimeout(t); if (me === 3) { end = true; no(Error('gas')); } else t = setTimeout(go, me * 2000); };
+      t = setTimeout(miss, 15000);
+      try { fire(o => (o && o.ok === true ? win(o) : miss()), miss); } catch (err) { miss(); }
+    };
+    go();
+  });
+}
+async function post(body) {
+  const txt = JSON.stringify(body);
+  if (gas()) return gpost((yes, no) => google.script.run.withSuccessHandler(yes).withFailureHandler(no).submit(txt));
+  if (API) return gpost((yes, no) => fetch(API, { method: 'POST', credentials: 'omit', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: txt, cache: 'no-store' }).then(r => r.json()).then(yes, no));
+  if (!served()) throw Error('file');
+  const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 8000);
+  try {
+    const r = await fetch('/submit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: ctl.signal, cache: 'no-store' });
+    const o = await r.json();
+    if (!o || o.ok !== true) throw Error('refused');
+    return o;
+  } finally { clearTimeout(t); }
+}
+const gate = (h, t) => { $('gh').textContent = h; $('gt').textContent = t ? '· ' + t : ''; $('gate').hidden = !h; };
+const lock = on => { for (const k of ['go', 'pgo']) if ($(k)) $(k).disabled = on; };
+if (API) {
+  const shut = (h, t) => { for (const k of ['s1', 's2', 'p1']) if ($(k)) $(k).hidden = true; gate(h, t); };
+  lock(true); gate('연결 중', '잠시 기다림');
+  fetch(API + '?api=config', { credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout ? AbortSignal.timeout(15000) : undefined }).then(r => r.json()).then(c => {
+    if (!c || c.ok !== true || c.mode !== (PRACTICE ? '연습' : '본평가')) return shut('지금은 열려 있지 않음', '선생님께 알림');
+    if (!PRACTICE) { if (!/^[A-Za-z0-9-]{1,40}$/.test(c.code || '')) return shut('설정 평가코드를 확인', '선생님께 알림'); window.ME2_EVAL_CODE = c.code; }
+    gate(''); lock(false);
+  }).catch(() => shut('연결 안 됨', '새로 고침'));
+}
+let lastBody = null, sending = false;
+function doSubmit() {
+  if (sending || !curId) return;
+  ovl('cf', false);
+  
+  send();
+}
+async function send() {
+  if (sending || !curId) return;
+  sending = true; lastBody = payload();
+  $('sfh').textContent = '보내는 중'; $('sft').textContent = '잠시 기다림'; $('sfrow').hidden = true; $('sfback').hidden = true; $('sfok').textContent = ''; ovl('sf', true);
+  try { const o = await post(lastBody); sending = false; ovl('sf', false); finishEval(lastBody, o.receipt); }
+  catch (err) {
+    sending = false;
+    $('sfh').textContent = '제출이 닿지 않음'; $('sft').innerHTML = '· 쓴 기록은 이 PC 에 그대로 남음<br>· 창을 그대로 두고 손 들기';
+    $('sfrow').hidden = false; $('sfback').hidden = false; $('sfre').focus();
+  }
+}
+const pad2 = n => String(n).padStart(2, '0');
+const stamp = iso => { const d = new Date(iso); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) + ' ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes()) + ':' + pad2(d.getSeconds()); };
+function finishEval(body, receipt) {
+  const rec = { format: 'ME2-save-1', mode: 'eval', id: body.id, code: body.code, done: true, submitted: body.submitted, receipt: String(receipt || '') };
+  const id = curId; curId = '';
+  try { localStorage.setItem(skey(id), JSON.stringify(rec)); } catch (err) { note('이 PC 저장소를 못 비움 · 손 들기', 8000); }
+  showDone(rec);
+}
+function showDone(rec) {
+  curId = ''; rate = 0; finishing = false; s = null; log.clear(); drawLog(); pend = null; lastBody = null;
+  calcOpen(false); calc.press('C'); cshow(); sheet = blank(); hs = [JSON.stringify(sheet)]; hi = 0; render();
+  for (const id of ['calcbtn', 'home']) $(id).hidden = true;
+  $('clock').textContent = ''; $('lab').hidden = true; $('start').hidden = true;
+  $('d-id').textContent = rec.id; $('d-t').textContent = stamp(rec.submitted); $('d-r').textContent = rec.receipt || '';
+  $('done').hidden = false;
+}
+function saveFile() {
+  const b = lastBody || payload(), d = new Date(b.submitted);
+  const nm = '제출_' + String(b.id).replace(/[^0-9A-Za-z-]/g, '_') + '_' + d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate()) + '_' + pad2(d.getHours()) + pad2(d.getMinutes()) + pad2(d.getSeconds()) + '.json';
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(b, null, 1) + '\n'], { type: 'application/json' })); a.download = nm;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 30000);
+  $('sfok').textContent = '저장함 · 다운로드 폴더 「' + nm.replace(/\.json$/, '') + '」 · 손 들기';
+}
+$('sub').onclick = askSubmit; $('cfback').onclick = () => ovl('cf', false); $('cfgo').onclick = doSubmit;
+$('sfre').onclick = send; $('sfsave').onclick = saveFile; $('sfback').onclick = () => ovl('sf', false);
+
+function mk(tag, attrs, parent) { const el = document.createElementNS(NS, tag); for (const k in attrs) el.setAttribute(k, attrs[k]); (parent || svg).appendChild(el); return el; }
+const G = { ar: {}, h: {}, lab: {}, gd: {} };
+for (const h in HX) G.gd[h] = mk('path', { stroke: '#a9b3c1', 'stroke-width': 1.5, 'stroke-dasharray': '2 5', fill: 'none' });
+G.yax = mk('path', { stroke: '#1d2430', 'stroke-width': 2, fill: 'none' }); G.xax = mk('path', { stroke: '#1d2430', 'stroke-width': 2, fill: 'none' });
+G.ylab = mk('text', { class: 'ax', 'text-anchor': 'middle' }); G.xlab = mk('text', { class: 'ax', 'text-anchor': 'end' });
+for (const c of '에너지') mk('tspan', {}, G.ylab).textContent = c;
+G.xlab.textContent = '반응 경로';
+G.cN = mk('path', { class: 'cv', stroke: '#1d2430', 'stroke-width': 3, fill: 'none' }); G.cC = mk('path', { class: 'cv', stroke: '#1f5fbf', 'stroke-width': 3, fill: 'none', 'stroke-dasharray': '9 7' });
+for (const h in HX) {
+  const t = mk('text', { class: 'hl' + (h === 'TSc' ? ' c' : ''), 'text-anchor': 'middle' });
+  for (const p of h.startsWith('TS') ? ['봉우리', h === 'TSn' ? '촉매 없음' : '촉매 있음'] : [HN[h]]) mk('tspan', {}, t).textContent = p;
+  G.lab[h] = t;
+}
+for (const a in AN) {
+  const g = mk('g', { class: 'ar' }), col = ACOL[a];
+  G.ar[a] = { g, guide: mk('path', { stroke: col, 'stroke-width': 2, 'stroke-dasharray': '4 4', fill: 'none' }, g), line: mk('path', { class: 'al', stroke: col, 'stroke-width': 3, fill: 'none' }, g),
+    head: mk('path', { fill: col }, g), bg: mk('rect', { fill: '#fff', rx: 4 }, g), txt: mk('text', { style: 'fill:' + col }, g) };
+}
+for (const h in HX) {
+  const g = mk('g', { class: 'hd', tabindex: 0, 'data-h': h, role: 'slider', 'aria-label': HN[h], 'aria-valuemin': 0, 'aria-valuemax': 100 });
+  G.h[h] = { g, hit: mk('circle', { class: 'hit', r: 24 }, g) }; mk('circle', { class: 'dot', r: 11 }, g);
+}
+const gx = h => GP.l + (svg.clientWidth - GP.l - GP.r) * HX[h];
+const gbot = () => svg.clientHeight - GP.b - GP.top;
+const gy = lv => gbot() - (gbot() - GP.top) * lv / 100;
+function cpts(X, Y, T, w) {
+  const out = [];
+  for (let x = GP.l + 2; x < X.R; x += 6) out.push([x, Y.R]);
+  for (const [a, b] of [['R', T], [T, 'P']]) for (let i = 0; i <= 30; i++) {
+    const t = i / 30, u = 1 - t, m = (X[a] + X[b]) / 2;
+    out.push([X[a] * u * u * u + 3 * m * u * t * (u + t) + X[b] * t * t * t, Y[a] + (Y[b] - Y[a]) * t * t * (3 - 2 * t)]);
+  }
+  for (let x = X.P; x <= w - GP.r; x += 6) out.push([x, Y.P]);
+  return out;
+}
+function drawGraph() {
+  const w = svg.clientWidth, h0 = svg.clientHeight;
+  if (sec !== 3 || !w || !h0) return;
+  const fs = parseFloat(getComputedStyle(svg).fontSize), lh = Math.ceil(fs * 1.45);
+  GP.l = Math.ceil(fs * 1.2) + 16;
+  const xl = gx('TSc') + Math.max(...[...G.lab.TSc.children].map(t => t.getComputedTextLength())) / 2 + 6 > w - 4 - G.xlab.getComputedTextLength() ? 2 : 1; GP.b = (xl + 1) * lh + 8;
+  const L = sheet.s3.levels, X = {}, Y = {}, ax = h0 - GP.b, a0 = document.activeElement;
+  const act = pend && pend.from ? pend.from : a0 && a0.closest && a0.closest('#g3 .hd') ? a0.dataset.h : '';
+  for (const h in HX) { X[h] = gx(h); Y[h] = gy(L[h]); }
+  G.yax.setAttribute('d', 'M' + GP.l + ' ' + ax + ' V4 M' + (GP.l - 6) + ' 14 L' + GP.l + ' 4 L' + (GP.l + 6) + ' 14');
+  G.xax.setAttribute('d', 'M' + GP.l + ' ' + ax + ' H' + (w - 4) + ' M' + (w - 14) + ' ' + (ax - 6) + ' L' + (w - 4) + ' ' + ax + ' L' + (w - 14) + ' ' + (ax + 6));
+  [...G.ylab.children].forEach((t, i) => { t.setAttribute('x', (GP.l - 8) / 2); t.setAttribute('y', 8 + fs + i * lh); });
+  G.xlab.setAttribute('x', w - 4); G.xlab.setAttribute('y', ax + 6 + fs + xl * lh);
+  const seg = (x0, y0, x1, y1) => ' C' + (x0 + x1) / 2 + ' ' + y0 + ' ' + (x0 + x1) / 2 + ' ' + y1 + ' ' + x1 + ' ' + y1;
+  const curve = T => 'M' + (GP.l + 2) + ' ' + Y.R + ' H' + X.R + seg(X.R, Y.R, X[T], Y[T]) + seg(X[T], Y[T], X.P, Y.P) + ' H' + (w - GP.r);
+  G.cN.setAttribute('d', curve('TSn')); G.cC.setAttribute('d', curve('TSc'));
+  for (const h in HX) {
+    const H = G.h[h];
+    H.g.setAttribute('transform', 'translate(' + X[h] + ' ' + Y[h] + ')'); H.g.setAttribute('aria-valuenow', L[h]);
+    H.g.classList.toggle('sel', !!pend && pend.from === h);
+    G.lab[h].classList.toggle('on', h === act);
+    [...G.lab[h].children].forEach((t, i) => { t.setAttribute('x', X[h]); t.setAttribute('y', ax + 6 + fs + i * lh); });
+    G.gd[h].setAttribute('d', 'M' + X[h] + ' ' + (Y[h] + 14) + ' V' + ax);
+  }
+  const bx = (x0, y0, x1, y1) => ({ x0, y0, x1, y1 }), hitB = (p, q) => p.x0 < q.x1 && q.x0 < p.x1 && p.y0 < q.y1 && q.y0 < p.y1;
+  const dots = Object.keys(HX).map(h => bx(X[h] - 15, Y[h] - 15, X[h] + 15, Y[h] + 15)), lines = [], put = [];
+  for (const a in AN) {
+    const A = G.ar[a], r = sheet.s3.arrows[a];
+    if (!r) { A.g.style.display = 'none'; continue; }
+    A.g.style.display = '';
+    const y0 = Y[r.from], y1 = Y[r.to], top = Math.min(y0, y1), bot = Math.max(y0, y1), dn = y1 > y0, big = bot - top > 12;
+    const cand = [X[r.to] - 34, X[r.to] + 34, X[r.to] - 62, X[r.to] + 62, X[r.from] + 34, X[r.from] - 34].filter(x => x > GP.l + 12 && x < w - GP.r - 12);
+    const xs = cand.find(x => !lines.some(l => Math.abs(l.x - x) < 20 && l.top < bot + 8 && top < l.bot + 8) && !Object.keys(HX).some(h => Math.abs(X[h] - x) < 18 && Y[h] > top - 16 && Y[h] < bot + 16)) || cand[0] || X[r.to];
+    lines.push({ a, r, x: xs, top, bot, y0, y1 });
+    A.guide.setAttribute('d', 'M' + X[r.from] + ' ' + y0 + ' H' + xs + ' M' + xs + ' ' + y1 + ' H' + X[r.to]);
+    A.line.setAttribute('d', 'M' + xs + ' ' + y0 + ' V' + (big ? y1 + (dn ? -10 : 10) : y1));
+    A.head.setAttribute('d', big ? 'M' + xs + ' ' + y1 + ' L' + (xs - 7) + ' ' + (y1 + (dn ? -13 : 13)) + ' L' + (xs + 7) + ' ' + (y1 + (dn ? -13 : 13)) + ' Z' : '');
+  }
+  const segs = lines.map(l => bx(l.x - 5, l.top - 2, l.x + 5, l.bot + 2)), cv = lines.length ? cpts(X, Y, 'TSn', w).concat(cpts(X, Y, 'TSc', w)) : [];
+  for (const l of lines) {
+    const A = G.ar[l.a]; A.txt.textContent = l.r.value;
+    if (!filled(l.r.value)) { A.bg.setAttribute('width', 0); continue; }
+    A.txt.setAttribute('x', 0); A.txt.setAttribute('y', 0);
+    const bb = A.txt.getBBox(), tw = bb.width + 8, th = bb.height + 4, mid = (l.y0 + l.y1) / 2, left = l.x <= X[l.r.to];
+    let best = null;
+    [mid, mid - th, mid + th, l.top - th / 2 - 4, l.bot + th / 2 + 4, mid - 2 * th, mid + 2 * th].forEach((cy, i) => [left, !left].forEach((lf, j) => {
+      const x0 = lf ? l.x - 8 - tw : l.x + 8, b = bx(x0, cy - th / 2, x0 + tw, cy + th / 2);
+      const hard = b.x0 < GP.l + 2 || b.x1 > w - 2 || b.y0 < 2 || b.y1 > ax - 2 || dots.some(d => hitB(b, d)) || segs.some(d => hitB(b, d)) || put.some(d => hitB(b, d));
+      const sc = (hard ? 1e6 : 0) + cv.filter(([x, y]) => x > b.x0 - 2 && x < b.x1 + 2 && y > b.y0 - 2 && y < b.y1 + 2).length * 100 + i * 2 + j;
+      if (!best || sc < best.sc) best = { sc, b };
+    }));
+    put.push(best.b);
+    A.bg.setAttribute('x', best.b.x0); A.bg.setAttribute('y', best.b.y0); A.bg.setAttribute('width', tw); A.bg.setAttribute('height', th);
+    A.txt.setAttribute('x', best.b.x0 + 4 - bb.x); A.txt.setAttribute('y', best.b.y0 + 2 - bb.y);
+  }
+}
+new ResizeObserver(drawGraph).observe(svg);
+svg.addEventListener('focusin', drawGraph); svg.addEventListener('focusout', () => requestAnimationFrame(drawGraph));
+function hint() {
+  svg.classList.toggle('picking', !!pend);
+  $('ahint').textContent = !pend ? '손잡이 위아래로 끌기(↑↓ 글쇠) · 화살표: 단추 → 시작 손잡이 → 끝 손잡이'
+    : AN[pend.a] + ': ' + (pend.from ? HN[pend.from] + ' → 끝 손잡이 누름' : '시작 손잡이 누름') + ' · 단추 다시 누르면 그만둠';
+}
+function pickH(h) {
+  if (!pend) return;
+  if (!pend.from) { pend.from = h; render(); return; }
+  if (h === pend.from) return;
+  const a = pend.a, old = sheet.s3.arrows[a];
+  sheet.s3.arrows[a] = { from: pend.from, to: h, value: old ? old.value : '' };
+  pend = null; commit(null);
+  document.querySelector('[data-f="s3.arrows.' + a + '.value"]').focus();
+}
+for (const b of document.querySelectorAll('.abtn')) b.onclick = () => { pend = pend && pend.a === b.dataset.a ? null : { a: b.dataset.a, from: '' }; render(); };
+for (const b of document.querySelectorAll('.adel')) b.onclick = () => { sheet.s3.arrows[b.dataset.a] = null; pend = null; commit(null); };
+svg.addEventListener('pointerdown', e => {
+  const g = e.target.closest('.hd'); if (!g) return;
+  e.preventDefault(); g.focus();
+  const h = g.dataset.h;
+  if (pend) { pickH(h); return; }
+  drag = { h, id: e.pointerId, dy: e.clientY - svg.getBoundingClientRect().top - gy(sheet.s3.levels[h]) };
+  svg.setPointerCapture(e.pointerId);
+});
+svg.addEventListener('pointermove', e => {
+  if (!drag || e.pointerId !== drag.id) return;
+  const y = e.clientY - svg.getBoundingClientRect().top - drag.dy, lv = Math.round(Math.max(0, Math.min(100, (gbot() - y) / (gbot() - GP.top) * 100)));
+  if (lv !== sheet.s3.levels[drag.h]) { sheet.s3.levels[drag.h] = lv; drawGraph(); }
+});
+const endDrag = e => { if (drag && e.pointerId === drag.id) { drag = null; commit(null); } };
+svg.addEventListener('pointerup', endDrag); svg.addEventListener('pointercancel', endDrag);
+svg.addEventListener('keydown', e => {
+  const g = e.target.closest && e.target.closest('.hd'); if (!g) return;
+  const h = g.dataset.h, L = sheet.s3.levels;
+  if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { e.preventDefault(); L[h] = Math.max(0, Math.min(100, L[h] + (e.key === 'ArrowUp' ? 2 : -2))); commit('k:' + h); }
+  else if ((e.key === 'Enter' || e.key === ' ') && pend) { e.preventDefault(); pickH(h); }
+});
+
+window.__sheet = () => JSON.parse(JSON.stringify(sheet));
+window.__runs = () => runs();
+window.__hist = () => ({ at: hi, n: hs.length });
+window.__gy = lv => svg.getScreenCTM().f + gy(lv);
+requestAnimationFrame(t => { lastT = t; frame(t); });
+
+function inView(el) {
+  if (!el.closest('#sbody')) return true;
+  const q = el.getBoundingClientRect(), b = $('sbody').getBoundingClientRect(), k = stk(el);
+  if (k && q.bottom > k.top + 1 && q.top < k.bottom - 1) return false;
+  return q.top >= b.top - 1 && q.bottom <= b.bottom + 1;
+}
+function textEls() {
+  const out = [], lw = $('logwrap').getBoundingClientRect(), th = document.querySelector('#log th').getBoundingClientRect(), ov = document.querySelector('.ovl:not([hidden])');
+  for (const el of document.querySelectorAll('body *')) {
+    if (el.closest('script,style,[hidden]') || el.id === 'bad' || (ov && !ov.contains(el)) || getComputedStyle(el).visibility !== 'visible') continue;
+    if (el.closest('#logb')) { const q = el.getBoundingClientRect(); if (q.top < th.bottom - 1 || q.top >= lw.bottom - 1) continue; }
+    if (!inView(el)) continue;
+    const own = [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim()) || ['INPUT', 'SELECT', 'BUTTON', 'TEXTAREA'].includes(el.tagName);
+    const r = el.getBoundingClientRect(); if (!own || r.width === 0 || r.height === 0) continue;
+    out.push(el);
+  }
+  return out;
+}
+function layout() {
+  const els = textEls(), small = [], clip = [], over = [];
+  for (const el of els) {
+    const f = parseFloat(getComputedStyle(el).fontSize); if (f < 18) small.push(el.tagName + ':' + (el.textContent || '').trim().slice(0, 12) + ':' + f);
+    if (el.scrollWidth > el.clientWidth + 1 && getComputedStyle(el).overflow !== 'visible') clip.push(el.id || el.tagName);
+  }
+  if (!$('figs').hidden) for (const [k, d] of Object.entries(drawn)) if (d.x0 < 0 || d.y0 < 0 || d.x1 > d.cw + 0.5 || d.y1 > d.ch + 0.5) clip.push('canvas:' + k);
+  const leaf = els.filter(el => !els.some(o => o !== el && el.contains(o))).map(el => [el, el.getBoundingClientRect()]);
+  for (let i = 0; i < leaf.length; i++) for (let j = i + 1; j < leaf.length; j++) {
+    const a = leaf[i][1], b = leaf[j][1];
+    if (a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1) over.push((leaf[i][0].id || leaf[i][0].tagName) + '/' + (leaf[j][0].id || leaf[j][0].tagName));
+  }
+  const sv = $('g3'), sr = sv.getBoundingClientRect();
+  if (sr.width && !sv.closest('[hidden]')) {
+    const ov = (a, b) => a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1;
+    const tx = leaf.filter(([el]) => sv.contains(el)), dots = [...sv.querySelectorAll('.dot')].map(el => el.getBoundingClientRect());
+    const als = [...sv.querySelectorAll('.al')].map(el => el.getBoundingClientRect()).filter(r => r.height > 0), pts = [], m = sv.getScreenCTM();
+    for (const p of sv.querySelectorAll('.cv')) { const n = p.getTotalLength(); for (let d = 0; d <= n; d += 3) pts.push(new DOMPoint(p.getPointAtLength(d).x, p.getPointAtLength(d).y).matrixTransform(m)); }
+    for (const [el, b] of tx) {
+      const nm = 'svg:' + el.textContent.trim().slice(0, 6);
+      if (dots.some(d => ov(b, d))) over.push(nm + '/손잡이');
+      if (als.some(d => ov(b, d))) over.push(nm + '/화살표');
+      if (!el.closest('.ar') && pts.some(q => q.x > b.left && q.x < b.right && q.y > b.top && q.y < b.bottom)) over.push(nm + '/곡선');
+    }
+  }
+  const g = window.__sim.geom, frameGap = g ? Math.max(...g.frame.map((x, i) => Math.abs(x - g.wall[i]))) : 0;
+  const de = document.documentElement, page = { w: de.scrollWidth - innerWidth, h: de.scrollHeight - innerHeight };
+  const ov = document.querySelector('.ovl:not([hidden])');
+  const vis = el => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && !el.closest('[hidden]') && (!ov || ov.contains(el)) && inView(el) && getComputedStyle(el).visibility === 'visible'; }, R = el => el.getBoundingClientRect(), mn = a => a.length ? Math.round(Math.min(...a) * 10) / 10 : null;
+  const taps = [...document.querySelectorAll('button, input, textarea, #g3 .hit')].filter(vis), recs = taps.filter(el => el.closest('#sheet, #start') && !el.matches('#g3 .hit'));
+  const bs = [...document.querySelectorAll('button, #g3 .hit')].filter(vis).map(el => [el, R(el)]);
+  let gapMin = Infinity, gapPair = '';
+  for (let i = 0; i < bs.length; i++) for (let j = i + 1; j < bs.length; j++) {
+    const p = bs[i][0].parentElement; if (p.classList.contains('seg') && p === bs[j][0].parentElement) continue;
+    const a = bs[i][1], b = bs[j][1], vo = a.top < b.bottom && b.top < a.bottom, ho = a.left < b.right && b.left < a.right;
+    const d = vo && ho ? -1 : vo ? Math.max(b.left - a.right, a.left - b.right) : ho ? Math.max(b.top - a.bottom, a.top - b.bottom) : Infinity;
+    if (d < gapMin) { gapMin = d; gapPair = (bs[i][0].id || bs[i][0].textContent.trim().slice(0, 8)) + '/' + (bs[j][0].id || bs[j][0].textContent.trim().slice(0, 8)); }
+  }
+  return { minFont: Math.min(CANVAS_FONT, ...els.map(el => parseFloat(getComputedStyle(el).fontSize))), canvasFont: CANVAS_FONT, small, clip, over, page, frameGap, n: els.length,
+    tapMin: mn(taps.map(el => Math.min(R(el).width, R(el).height))), recTap: mn(recs.map(el => R(el).height)),
+    inputFont: mn([...document.querySelectorAll('#sheet input, #sheet textarea, #start input')].filter(vis).map(el => parseFloat(getComputedStyle(el).fontSize))),
+    handle: mn([...document.querySelectorAll('#g3 .hit')].filter(vis).map(el => Math.min(R(el).width, R(el).height))),
+    gapMin: gapMin === Infinity ? null : Math.round(gapMin * 10) / 10, gapPair };
+}
+function judge(m) {
+  const f = [];
+  if (!(m.minFont >= 18)) f.push('글자 18 px 미만 ' + m.small.join(' '));
+  if (m.clip.length) f.push('잘림 ' + m.clip.join(' '));
+  if (m.over.length) f.push('겹침 ' + m.over.slice(0, 4).join(' '));
+  if (m.page.w > 1 || m.page.h > 1) f.push('화면 넘침 ' + m.page.w + '×' + m.page.h);
+  if (m.frameGap > 0.5) f.push('테두리 ≠ 벽 ' + m.frameGap);
+  if (m.inputFont != null && m.inputFont < 22) f.push('입력 칸 글자 22 px 미만 ' + m.inputFont);
+  if (m.recTap != null && m.recTap < 48) f.push('기록 쪽 누름 48 px 미만 ' + m.recTap);
+  if (m.tapMin != null && m.tapMin < 44) f.push('누름 44 px 미만 ' + m.tapMin);
+  if (m.handle != null && m.handle < 44) f.push('손잡이 44 px 미만 ' + m.handle);
+  if (m.gapMin != null && m.gapMin < 6) f.push('단추 사이 6 px 미만 ' + m.gapMin + ' ' + m.gapPair);
+  for (const r of m.rows || []) if (!r.endOK || r.ratio !== M.ratioStr(r.nBstar)) { f.push('끝 B 어긋남 ' + r.id + ' ' + r.T + ' ' + r.cat); break; }
+  for (const st of m.students || []) for (const cat of [false, true]) { const ns = st.rows.filter(r => r.cat === cat).map(r => r.nB); if (ns.some((x, i) => i && x < ns[i - 1])) f.push('단조 아님 ' + st.id); }
+  return f;
+}
+function report(m, extra) {
+  const fails = judge(m);
+  window.__selfcheck = Object.assign({ ok: fails.length === 0, fails, tested: SELFTEST, layout: m }, extra || {});
+  if (SELFTEST && fails.length) { const el = $('bad'); el.style.display = 'block'; el.textContent = '자가 검사 실패: ' + fails.join(' · '); }
+}
+function planted(m) {
+  const cases = [['작은 글자', { minFont: 12, small: ['x'] }], ['잘림', { clip: ['x'] }], ['겹침', { over: ['a/b'] }], ['넘침', { page: { w: 30, h: 0 } }], ['테두리', { frameGap: 40 }],
+    ['끝 B', { rows: [{ id: 'P', T: 300, cat: false, endOK: false, ratio: '0.00', nBstar: 0 }] }],
+    ['단조', { students: [{ id: 'P', rows: [{ cat: false, nB: 3 }, { cat: false, nB: 2 }] }] }],
+    ['작은 기록 단추', { recTap: 30 }], ['작은 단추', { tapMin: 30 }], ['작은 칸 글', { inputFont: 14 }], ['작은 손잡이', { handle: 20 }], ['좁은 틈', { gapMin: 2, gapPair: 'a/b' }]];
+  const miss = cases.filter(([, bad]) => judge(Object.assign({}, m, bad)).length === 0).map(c => c[0]);
+  return { total: cases.length, miss };
+}
+window.__layout = layout; window.__judge = judge; window.__planted = () => planted(layout());
+setTimeout(function () {
+  if (!SELFTEST) { report(layout()); return; }
+  const q = location.search.match(/[?&]ids=([^&]*)/), ids = q ? decodeURIComponent(q[1]).split(',') : ['T0001', 'T0002', 'T0003'];
+  const students = [], t0 = performance.now(); let k = 0, cur = null;
+  (function next() {
+    if (!cur) { if (k >= ids.length) return done(); const id = M.normId(ids[k]), sd = M.seedOf(id), ci = M.comboOf(id, combos); cur = { id, seed: sd, combo: ci, c: combos[ci], rows: [], todo: [] }; for (const cat of [false, true]) for (const T of M.TEMPS) cur.todo.push([T, cat]); }
+    const [T, cat] = cur.todo.shift(); cur.rows.push(M.run(cur.seed, T, cat, cur.c));
+    if (!cur.todo.length) { students.push({ id: cur.id, seed: cur.seed, combo: cur.combo, rows: cur.rows }); cur = null; k++; }
+    setTimeout(next, 0);
+  })();
+  function done() {
+    const m = layout(); m.students = students; m.rows = students.flatMap(st => st.rows.map(r => Object.assign({ id: st.id }, r)));
+    const p = planted(m);
+    report(m, { results: students, planted: p, ms: Math.round(performance.now() - t0), ua: navigator.userAgent });
+    if (p.miss.length) { window.__selfcheck.ok = false; window.__selfcheck.fails.push('심은 결함 못 잡음 ' + p.miss.join(' ')); }
+    delete window.__selfcheck.layout.rows; delete window.__selfcheck.layout.students;
+    window.__selfcheck.done = true;
+  }
+}, 1000);
+})();
+</script>
+</body>
+</html>
