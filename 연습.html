@@ -257,8 +257,7 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
 @keyframes tdd { 50% { stroke: #f8c9ad; } }
 #sheet input.todo.tjust:focus { outline: 5px solid #e8590c; outline-offset: 2px; animation: tdo 1s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .todo, #g3 .hd.todo .dot, #sheet input.todo.tjust:focus { animation: none; } }
-#sheet .sec input.bad, #sheet .sec textarea.bad { border: 4px solid var(--mark); padding-right: 1.3em; background-repeat: no-repeat; background-size: 0.8em 0.8em; background-position: right 0.25em center;
-  background-image: linear-gradient(45deg, transparent 42%, var(--mark) 42%, var(--mark) 58%, transparent 58%), linear-gradient(-45deg, transparent 42%, var(--mark) 42%, var(--mark) 58%, transparent 58%); }
+#sheet .sec input.bad, #sheet .sec textarea.bad { border: 4px solid var(--mark); background-color: #fff5f5; }
 #g3.bad { border: 4px solid var(--mark); }
 .tabs .x { color: var(--mark); font-weight: 700; }
 .tabs .x:not(:empty) { background: #fff5f5; border-radius: 999px; padding: 0 4px; }
@@ -812,7 +811,7 @@ const GR_NUM = /\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?|\.\d+/g;
 const grOpOf = s => { const t = s.replace(/[\s()]/g, ''); return /^[÷/]$/.test(t) ? '나눗셈' : /^-$/.test(t) ? '뺄셈' : /^[×x*·]$/i.test(t) ? '곱셈' : /^\+$/.test(t) ? '덧셈' : '모름'; };
 function grReadSub(s) {
   if (grBlank(s)) return null;
-  const segs = grNorm(s).replace(/[≈≒]/g, '=').split('=').map(g => { const ns = [...g.matchAll(GR_NUM)]; return { g, ns }; }).filter(x => x.ns.length === 2 || x.ns.length === 4);
+  const segs = grAnsEq(s).split('=').map(g => { const ns = [...g.matchAll(GR_NUM)]; return { g, ns }; }).filter(x => x.ns.length === 2 || x.ns.length === 4);
   if (segs.length !== 1) return null;
   const { g, ns } = segs[0], w = ns.map(m => m[0].replace(/,/g, '')), between = i => g.slice(ns[i].index + ns[i][0].length, ns[i + 1].index);
   const ops = ns.slice(1).map((_, i) => grOpOf(between(i)));
@@ -902,7 +901,7 @@ function grJudge(sub, k) {
     else if (method === 'nB') recalc = mine.nB ? mine.nB[0] / mine.nB[1] : null;
     else if (method === 'frac') recalc = mine.frac ? mine.frac[0] / mine.frac[1] : null;
     else if (method === 'above') { recalc = rn.qC / rn.qN; memo.push('Ea 보다 큰 충돌 수가 정답표와 다름 → 단순 계산 오류로 봄'); }
-    if (recalc === null) teacher = !rev && (rd !== rdF || rd.op === '나눗셈');
+    if (recalc === null) teacher = !rev && (rd.op === '나눗셈' || rd.op === '모름');
   } else if (!noSub) teacher = true;
   const inRange = recalc !== null && ans !== null && ans / recalc >= 0.98 - 1e-12 && ans / recalc <= 1.02 + 1e-12;
   const calcOK = !teacher && inRange && rd && rd.op === '나눗셈' && !(method === 'above' && !viaScreen) && !memo.includes('나누는 순서 반대');
@@ -914,7 +913,8 @@ function grJudge(sub, k) {
   const s2blank = GR_SIDES.every(([s]) => GR_S2.every(([f]) => grBlank(grG(sh, 's2', s, f))));
   if (ans !== null && !hasProc && !ansProc && s2blank) why.push('측정 기록 · 계산 과정 없이 답만 있음');
   const fromMine = [mine.nB && mine.nB[0] / mine.nB[1], mine.frac && mine.frac[0] / mine.frac[1]].filter(x => x);
-  if (ans !== null && !viaScreen && !viaMine && !fromMine.some(x => ans / x >= 0.98 && ans / x <= 1.02)) why.push('적은 측정값으로 나올 수 없는 답');
+  const viaA = ansProc && ['nB', 'above', 'frac'].some(m => hit(rdA).scr[m]);
+  if (ans !== null && !viaScreen && !viaMine && !viaA && !fromMine.some(x => ans / x >= 0.98 && ans / x <= 1.02)) why.push('적은 측정값으로 나올 수 없는 답');
   const outside = ['formula', 'sub', 'ans'].map(f => s4[f]).concat(['ga', 'na', 'da'].map(f => grG(sh, 's6', f))).filter(x => !grBlank(x)).some(x => GR_OUTSIDE.test(grNorm(x)));
   if (outside) why.push('교육과정 밖 식 흔적 · 풀이가 없을 때만 질의');
   const runs = Array.isArray(sub.runs) ? sub.runs : [];
@@ -1772,6 +1772,8 @@ function pnum(n) {
 const ptLater = () => { cancelAnimationFrame(ptRaf); ptRaf = requestAnimationFrame(ptodo); };
 $('sbody').addEventListener('scroll', ptLater, { passive: true }); window.addEventListener('resize', ptLater);
 for (const b of $('tabs').children) b.insertAdjacentHTML('beforeend', '<span class="x"></span>');
+function pbad4(j) { return j.rd && j.rd.op !== '나눗셈' ? '나눗셈으로' : j.memo.includes('나누는 순서 반대') ? '나누는 순서 반대' : ''; }
+function psym(s) { for (const g of String(s).normalize('NFKC').replace(/[≈≒→]/g, '=').split('=')) { const n = [...g.matchAll(/\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?|\.\d+/g)]; if (n.length === 2) return g.slice(n[0].index + n[0][0].length, n[1].index).replace(/[\s()]/g, ''); } return ''; }
 window.__ptodo = () => { const e = ptEl; return { text: $('todo').hidden ? '' : $('todo').textContent, el: e && (e.id || ['data-f', 'data-t', 'data-cat', 'data-a', 'data-h'].map(a => e.getAttribute(a)).find(x => x) || e.className || e.textContent.trim()), bad: [...document.querySelectorAll('#sheet .bad')].map(x => x.dataset.f || x.id), live: curId ? plive() : [] }; };
 function pfix() {
   const r = presult; if (!r) return;
@@ -1781,7 +1783,9 @@ function pfix() {
   for (const a in AN) { const m = j.marks[AN[a]]; if (m === '바름') continue; if (/봉우리|아래 방향/.test(m)) mk['s3.g.' + a] = JSON.stringify([sh.s3.levels, sh.s3.arrows[a]]); else mk['s3.arrows.' + a] = JSON.stringify(sh.s3.arrows[a]); }
   if (j.reversed) mk['s3.levels'] = JSON.stringify(sh.s3.levels);
   for (const f of ['formula', 'sub', 'ans']) if (!filled(sh.s4[f]) && !(f === 'sub' && j.memo.includes('식 칸의 대입 수로 봄'))) mk['s4.' + f] = JSON.stringify(sh.s4[f]);
-  if (j.recalc !== null && !j.inRange) mk['s4.ans'] = JSON.stringify(sh.s4.ans);
+  const w4 = pbad4(j), f4 = j.memo.includes('식 칸의 대입 수로 봄') ? 'formula' : 'sub';
+  if (w4) mk['s4.' + f4] = JSON.stringify(sh.s4[f4]);
+  if (j.recalc !== null && !j.inRange && !w4) mk['s4.ans'] = JSON.stringify(sh.s4.ans);
   if (!j.rd && filled(sh.s4.sub)) mk['s4.sub'] = JSON.stringify(sh.s4.sub);
   if (!j.minN) mk['s5.tminN'] = JSON.stringify(sh.s5.tminN);
   try { const o = JSON.parse(localStorage.getItem(skey(id))); delete o.done; localStorage.setItem(skey(id), JSON.stringify(o)); } catch (err) { }
@@ -1850,11 +1854,11 @@ function showResult(body, k, rc, again) {
     return tr(cn, my(sh.s2[side][f]), mark('[2] ' + sn + ' · ' + cn, x));
   }).join('')).join('');
   const fr = (a, b) => '<span class="fr"><span>' + escH(a) + '</span><span>' + escH(b) + '</span></span>';
-  const rd = j.rd ? (j.rd.raw4 ? fr(j.rd.raw4[0], j.rd.raw4[1]) + ' · ' + fr(j.rd.raw4[2], j.rd.raw4[3]) : j.rd.op === '나눗셈' ? fr(j.rd.aw, j.rd.bw) : escH(j.rd.aw + ' ' + j.rd.op + ' ' + j.rd.bw)) : filled(sh.s4.sub) ? '두 수를 못 읽음' : '—';
-  const tm = k.answers.Tmin_screen.no_cat;
+  const rd = j.rd ? (j.rd.raw4 ? fr(j.rd.raw4[0], j.rd.raw4[1]) + ' · ' + fr(j.rd.raw4[2], j.rd.raw4[3]) : j.rd.op === '나눗셈' ? fr(j.rd.aw, j.rd.bw) : escH(j.rd.aw + ' ' + (j.rd.op === '모름' ? psym(sh.s4.sub) : j.rd.op) + ' ' + j.rd.bw)) : filled(sh.s4.sub) ? '두 수를 못 읽음' : '—';
+  const tm = k.answers.Tmin_screen.no_cat, w4 = pbad4(j);
   const b4 = f => filled(sh.s4[f]) ? '' : no('빈 칸');
-  const e2 = (filled(sh.s4.formula) ? '' : tr('식', '—', b4('formula'))) + tr('대입의 두 수', rd, j.memo.includes('식 칸의 대입 수로 봄') ? yes('식 칸에서 읽음') : b4('sub') || (!j.rd ? no('못 읽음') : '')) + tr('다시 계산한 값', j.recalc === null ? '—' : String(+j.recalc.toFixed(4)), '') + tr('내 답', my(sh.s4.ans), b4('ans'))
-    + tr('<span class="nw">±2 % 안</span>', j.recalc === null || !filled(sh.s4.ans) ? '—' : j.inRange ? yes('맞음') : no('틀림'), '') + (j.memo.length ? tr('메모', escH(j.memo.join(' · ')), '') : '')
+  const e2 = (filled(sh.s4.formula) ? '' : tr('식', '—', b4('formula'))) + tr('대입의 두 수', rd, w4 ? no(w4) : j.memo.includes('식 칸의 대입 수로 봄') ? yes('식 칸에서 읽음') : b4('sub') || (!j.rd ? no('못 읽음') : '')) + tr('다시 계산한 값', j.recalc === null || w4 ? '—' : String(+j.recalc.toFixed(4)), '') + tr('내 답', my(sh.s4.ans), b4('ans'))
+    + tr('<span class="nw">±2 % 안</span>', j.recalc === null || w4 || !filled(sh.s4.ans) ? '—' : j.inRange ? yes('맞음') : no('틀림'), '') + (j.memo.length ? tr('메모', escH(j.memo.join(' · ')), '') : '')
     + tr('최저 온도(촉매 없음)', my(sh.s5.tminN), j.minN ? yes('맞음') : no(filled(sh.s5.tminN) ? '틀림' : '빈 칸') + ' · 화면 ' + shown(tm == null ? '없음' : tm + ' K'));
   $('rc1').innerHTML = box('요소 1 = [1]~[3] · 틀린 칸 ' + j.E, '<div class="big1">판정: ' + escH(e1t) + '</div>') + box('[1] 반응 조건', '<table class="rt">' + s1 + '</table>') + box('[3] 그래프 표시 셋 · 높낮이', '<table class="rt">' + gm + '</table>');
   $('rc2').innerHTML = box('[2] 기준 온도 측정값', '<table class="rt">' + s2 + '</table>');
