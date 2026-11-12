@@ -804,7 +804,8 @@ function grNum(s) {
   const m = /^([+-]?(?:\d+(?:\.\d*)?|\.\d+))(%)?(?:kJ\/mol|kJ|초|s|K|개|회|번)?$/i.exec(t);
   return m ? +m[1] / (m[2] ? 100 : 1) : null;
 }
-const grAns = s => (grBlank(s) ? null : grNum(grNorm(s).replace(/[≈≒]/g, '=').replace(/^.*=/, '').replace(/^\s*약/, '').replace(/\(?\s*배\s*\)?\s*$/, '')));
+const grAnsEq = s => grNorm(s).replace(/[≈≒→]/g, '=');
+const grAns = s => (grBlank(s) ? null : grNum(grAnsEq(s).replace(/^.*=/, '').replace(/^\s*약/, '').replace(/\(?\s*배\s*\)?\s*$/, '')));
 const grSame = (v, x) => v !== null && x !== null && Math.abs(v - x) <= 1e-9 * Math.max(1, Math.abs(x));
 const grNear = (w, x) => { const d = (/\.(\d+)/.exec(w) || ['', ''])[1].length; return Math.abs(+w - x) < Math.pow(10, -d) + 1e-12; };
 const GR_NUM = /\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?|\.\d+/g;
@@ -866,8 +867,11 @@ function grJudge(sub, k) {
   const s4 = sh.s4 || {}, s5 = sh.s5 || {}, basis = Array.isArray(s4.basis) ? s4.basis : [];
   const noF = grBlank(s4.formula), noSub = grBlank(s4.sub), hasProc = !noF || !noSub, ans = grAns(s4.ans), memo = [];
   if (hasProc && noF) memo.push('식 칸 빈 칸 → 상 아님(경계안 3절)');
-  if (hasProc && noSub) memo.push('대입 칸 빈 칸');
-  const rdA = noF && noSub ? grReadSub(s4.ans) : null, ansProc = !!rdA && rdA.op !== '모름';
+  const fStr = noSub && !noF ? grNorm(s4.formula).replace(/([A-Za-zΑ-Ωα-ω가-힣])\d+/g, '$1') : '';
+  let rdF = fStr ? grReadSub(fStr) : null;
+  if (rdF && rdF.op === '모름') rdF = null;
+  if (hasProc && noSub && !rdF) memo.push('대입 칸 빈 칸');
+  const rdA = noF && noSub ? grReadSub(grAnsEq(s4.ans)) : null, ansProc = !!rdA && rdA.op !== '모름';
   if (ansProc) memo.push('답 칸에 계산 과정 · 교사 확인');
   if (!grBlank(s4.ans) && ans === null) memo.push('답 칸 수를 못 읽음 · 교사 확인');
   const sv = (side, f) => grNum(grG(sh, 's2', side, f)), four = [sv('cat', 'eff'), sv('cat', 'aa'), sv('no', 'eff'), sv('no', 'aa')];
@@ -879,19 +883,17 @@ function grJudge(sub, k) {
     const scr = { nB: pairEq([r.a, r.b], [rc.nB, rn.nB]), above: pairEq([r.a, r.b], [rn.qC, rn.qN]) || pairEq([r.a, r.b], [rc.qC, rc.qN]),
       frac: fracEq([rc.eff, rc.aa, rn.eff, rn.aa], [rc.eff / rc.aa, rn.eff / rn.aa]) };
     const mi = { nB: !!mine.nB && pairEq([r.a, r.b], mine.nB), frac: !!mine.frac && fracEq(four, mine.frac) };
-    const rev = pairEq([r.b, r.a], [rc.nB, rn.nB]) || pairEq([r.b, r.a], [rn.qC, rn.qN]) || pairEq([r.b, r.a], [rc.qC, rc.qN]) || (!!mine.nB && pairEq([r.b, r.a], mine.nB));
+    const rev = pairEq([r.b, r.a], [rc.nB, rn.nB]) || pairEq([r.b, r.a], [rn.qC, rn.qN]) || pairEq([r.b, r.a], [rc.qC, rc.qN]) || (!!mine.nB && pairEq([r.b, r.a], mine.nB))
+      || (!!r.raw4 && (fracEq([rn.eff, rn.aa, rc.eff, rc.aa]) || fracEq([four[2], four[3], four[0], four[1]])));
     return { scr, mi, rev, any: ['nB', 'above', 'frac'].some(m => scr[m]) || ['nB', 'frac'].some(m => mi[m]) || rev };
   };
-  const fStr = noSub && !noF ? grNorm(s4.formula).replace(/([A-Za-zΑ-Ωα-ω가-힣])\d+/g, '$1') : '';
-  let rdF = fStr ? grReadSub(fStr) : null;
-  if (rdF && rdF.op !== '나눗셈') rdF = null;
   if (fStr && !rdF && (fStr.match(GR_NUM) || []).length >= 2) memo.push('식 칸 수를 대입으로 못 봄 · 교사 확인');
   const rd = rdF || grReadSub(s4.sub);
   if (rd && rd === rdF) memo.push('식 칸의 대입 수로 봄');
   let recalc = null, method = null, viaScreen = false, viaMine = false, teacher = false;
   if (rd) {
     const { scr, mi, rev } = hit(rd);
-    method = ['nB', 'above', 'frac'].find(m => scr[m]) || ['nB', 'frac'].find(m => mi[m]) || (rev ? 'nB' : null) || (basis.length === 1 ? basis[0] : null);
+    method = ['nB', 'above', 'frac'].find(m => scr[m]) || ['nB', 'frac'].find(m => mi[m]) || (rev ? (rd.raw4 ? 'frac' : 'nB') : null) || (basis.length === 1 ? basis[0] : null);
     viaScreen = !!['nB', 'above', 'frac'].find(m => scr[m]); viaMine = !!['nB', 'frac'].find(m => mi[m]);
     if (rev && !viaScreen && !viaMine) memo.push('나누는 순서 반대');
     if (method && !viaScreen && !viaMine && !rev) memo.push('대입 수가 [2] · 화면 값과 다름 · 교사 확인');
@@ -900,14 +902,14 @@ function grJudge(sub, k) {
     else if (method === 'nB') recalc = mine.nB ? mine.nB[0] / mine.nB[1] : null;
     else if (method === 'frac') recalc = mine.frac ? mine.frac[0] / mine.frac[1] : null;
     else if (method === 'above') { recalc = rn.qC / rn.qN; memo.push('Ea 보다 큰 충돌 수가 정답표와 다름 → 단순 계산 오류로 봄'); }
-    if (recalc === null) teacher = rd !== rdF || !rev;
+    if (recalc === null) teacher = !rev && (rd !== rdF || rd.op === '나눗셈');
   } else if (!noSub) teacher = true;
   const inRange = recalc !== null && ans !== null && ans / recalc >= 0.98 - 1e-12 && ans / recalc <= 1.02 + 1e-12;
   const calcOK = !teacher && inRange && rd && rd.op === '나눗셈' && !(method === 'above' && !viaScreen) && !memo.includes('나누는 순서 반대');
   const minN = grSame(grNum(s5.tminN), k.answers.Tmin_screen.no_cat), minC = grSame(grNum(s5.tminC), k.answers.Tmin_screen.cat), nMin = minN + minC;
   const s45blank = ['formula', 'sub', 'ans'].every(f => grBlank(s4[f])) && !basis.length && Object.values(s5).every(v => (v && typeof v === 'object') ? Object.values(v).every(grBlank) : grBlank(v));
   const e2 = s45blank ? '하 10 (요소 2 통째 빈)' : !hasProc && !ansProc ? '하 10 (계산 과정 없음)' : nMin === 0 ? '하 10 (최저 온도 둘 다 틀림)' : nMin === 1 || noF ? '중 20'
-    : teacher ?'교사 확인 (상 30 또는 중 20 · 대입 줄에서 두 수를 못 읽음)' : calcOK ? '상 30' : '중 20';
+    : teacher ? '교사 확인 (상 30 또는 중 20 · ' + (rd ? '다시 계산 못 함' : '대입 줄에서 두 수를 못 읽음') + ')' : calcOK ? '상 30' : '중 20';
   const why = [];
   const s2blank = GR_SIDES.every(([s]) => GR_S2.every(([f]) => grBlank(grG(sh, 's2', s, f))));
   if (ans !== null && !hasProc && !ansProc && s2blank) why.push('측정 기록 · 계산 과정 없이 답만 있음');
@@ -1837,7 +1839,7 @@ function showResult(body, k, rc, again) {
   presult = { judge: j, key: k, receipt: rc, body };
   const shown = x => escH(String(x).replace(/^-/, '−')), my = x => filled(x) ? escH(x) : '—';
   const yes = t => '<span class="yes">✓ ' + t + '</span>', no = t => '<span class="no">✗ ' + escH(t) + '</span>';
-  const mark = (nm, screen) => { const w = j.wrong.find(x => x === nm || x.startsWith(nm + '(')); return !w ? yes('맞음') : no(w.endsWith('(빈 칸)') ? '빈 칸' : w.endsWith('(부호)') ? '틀림 · 부호' : '틀림') + ' · 화면 ' + shown(screen); };
+  const mark = (nm, screen) => { const w = j.wrong.find(x => x === nm || x.startsWith(nm + '(')); return !w ? yes('맞음') : no(w.endsWith('(빈 칸)') ? '빈 칸' : w.endsWith('(부호)') ? '틀림 · 부호' : '틀림') + ' · 화면 ' + shown(screen); };
   const tr = (...c) => '<tr>' + c.map(x => '<td>' + x + '</td>').join('') + '</tr>', box = (h, b) => '<div class="rbox"><h3>' + h + '</h3>' + b + '</div>';
   const s1 = G2.S1.map(([f, nm, ok]) => tr(escH(nm.replace('[1] ', '').replace('활성화 에너지 ', '')), my(sh.s1[f]), mark(nm, ok === 'target' ? on.target : on[ok]))).join('');
   const gm = Object.entries(j.marks).map(([nm, m]) => tr(escH(nm), m === '바름' ? yes('바름') : no(m === '빠짐' ? '빠짐' : m.replace(/^틀림\((.*)\)$/, '틀림 · $1')) + ' · 바른 값 ' + shown(nm === 'ΔH' ? on.dH : nm.includes('없음') ? on.EaN : on.EaC))).join('')
@@ -1851,9 +1853,9 @@ function showResult(body, k, rc, again) {
   const rd = j.rd ? (j.rd.raw4 ? fr(j.rd.raw4[0], j.rd.raw4[1]) + ' · ' + fr(j.rd.raw4[2], j.rd.raw4[3]) : j.rd.op === '나눗셈' ? fr(j.rd.aw, j.rd.bw) : escH(j.rd.aw + ' ' + j.rd.op + ' ' + j.rd.bw)) : filled(sh.s4.sub) ? '두 수를 못 읽음' : '—';
   const tm = k.answers.Tmin_screen.no_cat;
   const b4 = f => filled(sh.s4[f]) ? '' : no('빈 칸');
-  const e2 = (filled(sh.s4.formula) ? '' : tr('식', '—', b4('formula'))) + tr('대입의 두 수', rd, j.memo.includes('식 칸의 대입 수로 봄') ? yes('식 칸에서 읽음') : b4('sub') || (!j.rd ? no('못 읽음') : '')) + tr('다시 계산한 값', j.recalc === null ? '—' : String(+j.recalc.toFixed(4)), '') + tr('내 답', my(sh.s4.ans), b4('ans'))
+  const e2 = (filled(sh.s4.formula) ? '' : tr('식', '—', b4('formula'))) + tr('대입의 두 수', rd, j.memo.includes('식 칸의 대입 수로 봄') ? yes('식 칸에서 읽음') : b4('sub') || (!j.rd ? no('못 읽음') : '')) + tr('다시 계산한 값', j.recalc === null ? '—' : String(+j.recalc.toFixed(4)), '') + tr('내 답', my(sh.s4.ans), b4('ans'))
     + tr('<span class="nw">±2 % 안</span>', j.recalc === null || !filled(sh.s4.ans) ? '—' : j.inRange ? yes('맞음') : no('틀림'), '') + (j.memo.length ? tr('메모', escH(j.memo.join(' · ')), '') : '')
-    + tr('최저 온도(촉매 없음)', my(sh.s5.tminN), j.minN ? yes('맞음') : no(filled(sh.s5.tminN) ? '틀림' : '빈 칸') + ' · 화면 ' + shown(tm == null ? '없음' : tm + ' K'));
+    + tr('최저 온도(촉매 없음)', my(sh.s5.tminN), j.minN ? yes('맞음') : no(filled(sh.s5.tminN) ? '틀림' : '빈 칸') + ' · 화면 ' + shown(tm == null ? '없음' : tm + ' K'));
   $('rc1').innerHTML = box('요소 1 = [1]~[3] · 틀린 칸 ' + j.E, '<div class="big1">판정: ' + escH(e1t) + '</div>') + box('[1] 반응 조건', '<table class="rt">' + s1 + '</table>') + box('[3] 그래프 표시 셋 · 높낮이', '<table class="rt">' + gm + '</table>');
   $('rc2').innerHTML = box('[2] 기준 온도 측정값', '<table class="rt">' + s2 + '</table>');
   $('rc3').innerHTML = box('요소 2 = [4] 속도 증가비 · [5] 최저 온도', '<table class="rt">' + e2 + '</table>')
@@ -1865,7 +1867,7 @@ function showResult(body, k, rc, again) {
   if (!again || !rec) { rec = { id: body.id, n: (rec ? rec.n : 0) + 1, prevE: rec ? rec.E : null, E: nx, key: k, marks: null }; pfput(rec); }
   $('pfix').hidden = !nx; $('pnew').classList.toggle('go', !nx);
   $('rtx').textContent = nx ? '' : '틀린 칸 없음';
-  $('rcmp').textContent = rec.n > 1 ? (nx ? '' : ' · ') + rec.n + '번째 제출 · 틀린 칸 지난번 ' + rec.prevE + ' → 이번 ' + rec.E : '';
+  $('rcmp').textContent = rec.n > 1 ? (nx ? '' : ' · ') + rec.n + '번째 제출 · 빨간 표시 지난번 ' + rec.prevE + ' → 이번 ' + rec.E : '';
   $('res').querySelector('.rtop').hidden = !$('rtx').textContent && !$('rcmp').textContent;
   $('lab').hidden = true; $('start').hidden = true; $('res').hidden = false; $(nx ? 'pfix' : 'pnew').focus(); ptodo();
 }
