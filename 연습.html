@@ -51,8 +51,17 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
 .kv h2 { margin: 0 4px 0 0; }
 .kv > span { color: var(--sub); white-space: nowrap; background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 0 10px; box-shadow: 0 1px 2px rgba(16,24,40,.04); }
 .kv b { color: var(--ink); }
-.temps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-top: 6px; }
-.temps button { padding: 0; border-radius: 999px; }
+.temps { position: relative; height: 94px; margin-top: 6px; }
+.temps button { position: absolute; top: 0; width: 44px; left: calc(2px + (100% - 48px) * var(--i) / 10); padding: 0; border-radius: 999px; }
+.temps button:nth-child(even) { top: 50px; }
+#trow { margin-top: 4px; border-radius: 999px; }
+#tsl { display: block; width: 100%; height: 48px; margin: 0; padding: 0; -webkit-appearance: none; appearance: none; background: transparent; cursor: pointer; }
+#tsl::-webkit-slider-runnable-track { height: 12px; border-radius: 999px; background: #dbe4ff; }
+#tsl::-webkit-slider-thumb { -webkit-appearance: none; width: 48px; height: 48px; margin-top: -18px; border-radius: 50%; background: var(--pri); border: 4px solid #fff; box-shadow: 0 1px 4px rgba(16,24,40,.35); }
+#tsl.none::-webkit-slider-thumb { background: transparent; border-color: transparent; box-shadow: none; }
+#tsl:disabled { opacity: 0.45; cursor: default; }
+#tsl:focus-visible { outline: 3px solid var(--pri); outline-offset: 2px; border-radius: 999px; }
+#tnow { flex: none; font-size: 1.25em; color: var(--pri2); white-space: nowrap; }
 .row2 { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
 .row2.one { flex-wrap: nowrap; gap: 6px; }
 .row2.one h2 { margin: 0; white-space: nowrap; }
@@ -164,13 +173,30 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
 #g3 .hit { fill: transparent; }
 #g3 .dot { fill: #fff; stroke: var(--ink); stroke-width: 3; }
 #g3 .hd:focus .dot, #g3 .hd.sel .dot { stroke: var(--pick); stroke-width: 5; fill: #dbe4ff; }
-#g3.picking .dot { fill: #ffd966; }
+#g3 .ud { fill: var(--sub); }
+#g3.picking .ud { display: none; }
+#g3.picking .hd { cursor: pointer; }
+#g3.picking .hd:not(.sel) .dot { stroke: #e8590c; stroke-width: 5; fill: #fff4e6; }
+#tbox.first { outline: 3px solid #91a7ff; outline-offset: 2px; border-radius: 12px; }
+.qx { flex: none; align-self: flex-start; background: var(--tint); border-color: var(--tint2); color: var(--pri2); font-weight: 700; box-shadow: none; }
+.qx::after { content: " ▼"; }
+.qx[aria-expanded="true"]::after { content: " ▲"; }
+.fr { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; margin: 2px 0.15em; }
+.fr > span { white-space: nowrap; padding: 0 0.2em; }
+.fr > span + span { border-top: 2px solid currentColor; }
+.ic { width: 0.9em; height: 0.9em; vertical-align: -0.1em; margin-right: 0.2em; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+#again .ic { transform: scaleX(-1); }
+.g4 .ans { flex-wrap: wrap; }
+#g5 input:disabled { visibility: hidden; }
+#g5 .ph:not([hidden]) { min-height: 48px; display: flex; align-items: center; justify-content: center; line-height: 1.05; color: var(--sub); border: 1px dashed var(--line2); border-radius: 10px; background: var(--panel); }
+.fr > span:first-child { padding-bottom: 2px; }
+.fr > span + span { padding-top: 1px; }
 .ap { flex: none; width: 9.5em; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px; align-content: start; }
 .ap .abtn { grid-column: 1 / 3; text-align: left; white-space: nowrap; }
 .ap .abtn ~ .abtn { margin-top: 4px; }
 .ap input { width: 100%; }
 .ap .abtn.on { background: #ffe8cc; border-color: #e8590c; color: var(--ink); font-weight: 700; }
-#ahint { margin: 0; }
+#ahint { margin: 0; white-space: nowrap; }
 #note2 { color: var(--mark); font-weight: 700; }
 #calc { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; gap: 6px; padding: 6px; background: #fff; border: 2px solid var(--pri); border-radius: 14px; box-shadow: 0 12px 32px rgba(16,24,40,.18); }
 #calc[hidden] { display: none; }
@@ -221,6 +247,7 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
 .rtop { margin: 0; font-size: max(20px, 1em); font-weight: 700; background: #fff4e6; border: 1px solid #ffc078; border-radius: 12px; padding: 2px 12px; }
 #todo { flex: 0 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: max(20px, 1em); font-weight: 700; color: var(--ink); background: #fff4e6; border: 1px solid #ffa94d; border-radius: 10px; padding: 1px 10px; }
 #note2:not(:empty) + #todo { display: none; }
+#histwrap #pre { display: none; }
 #todok { margin-right: 0.5em; padding: 0 8px; border-radius: 6px; background: #c2410c; color: #fff; }
 .todo { outline: 5px solid #e8590c; outline-offset: 2px; animation: tdo 1s ease-in-out infinite; }
 .todo:focus, #g3 .hd.todo { animation: none; }
@@ -246,6 +273,7 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
 .rt tr + tr td { border-top: 1px solid #edf0f5; }
 .rt tr.sub td { font-weight: 700; padding-top: 3px; }
 .yes { color: var(--go); font-weight: 700; background: #e6fcf5; border-radius: 6px; padding: 0 4px; }
+.yes, #rc3 .no, .rt .nw { white-space: nowrap; }
 .no { color: var(--mark); font-weight: 700; background: #fff5f5; border-radius: 6px; padding: 0 4px; }
 .big1 { font-size: 1.15em; font-weight: 700; }
 @media (max-height: 620px) { #res { padding-top: 4px; gap: 4px; } .rcol { gap: 4px; } .rbox { padding: 1px 8px 2px; } .rt tr.sub td { padding-top: 1px; } .rhead button { min-height: 48px; } }
@@ -262,6 +290,7 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
   .prog { margin-top: 2px; }
   #logwrap { height: 8.8em; }
   #lab.s2 #logwrap { height: 6.4em; }
+  #lab.s4 #g4n { line-height: 1.1; }
 }
 @media (max-height: 620px) {
   #lab { padding: 4px 16px 1px; }
@@ -288,6 +317,9 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
   #figs .legend { gap: 0 0.6em; line-height: 1.15; }
   #figs .notes { padding-top: 0; padding-bottom: 0; line-height: 1.15; }
   #lab.s4 #g4n { line-height: 1; }
+  #lab.s4 #g4n:has(> #g4all:not([hidden])) { line-height: 1.1; }
+  #lab.s4 #g4all .fr { margin-top: 0; margin-bottom: 0; }
+  #lab.s4 #figs:has(#g4all:not([hidden])) { padding-top: 1px; padding-bottom: 1px; gap: 0; }
 }
 @media (max-height: 609px) and (max-width: 1320px) { #boxwrap { aspect-ratio: 1000 / 356; } }
 #sbody { background: linear-gradient(rgba(255,255,255,0), #fff 70%) 0 100% / 100% 28px no-repeat local, linear-gradient(rgba(16,24,40,0), rgba(16,24,40,.13)) 0 100% / 100% 14px no-repeat scroll, #fff; }
@@ -297,12 +329,16 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
 @media (max-height: 740px) { .sec[data-s="5"] { gap: 3px; } .sec[data-s="5"] .ask + .ask { margin-top: 0; } }
 #more[hidden], #pre[hidden] { display: none; }
 #pre { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: max-content; max-width: 94%; margin: 0; padding: 2px 12px; border: 1px solid var(--tint2); border-radius: 10px; background: #fff; color: var(--pri2); font-weight: 700; text-align: center; }
-#g4n { display: none; }
+#g4n, #g4q { display: none; }
 #g4n p { margin: 0; color: var(--ink); }
 #g4n .t { font-weight: 700; }
 #g4n .ind { padding-left: 1.2em; }
-#lab.s4:not(.calcon) #g4n { display: block; }
-#lab.s4 #figs > :is(#boxwrap, .legend, #histh, #histwrap, .notes:not(#g4n)), #lab.s5 #figs > :is(#histh, #histwrap, .notes) { display: none; }
+#lab.s4:not(.calcon) :is(#g4n, #g4q) { display: block; }
+#lab.s4 #figs > :is(#boxwrap, .lrow, #histh, #histwrap, .notes:not(#g4n)), #lab.s5 #figs > :is(#histh, #histwrap, .notes), #lab.s5 #wq { display: none; }
+.lrow { display: flex; align-items: center; gap: 6px 12px; }
+.lrow .legend { flex: 1; }
+#lab:not(.s4) #tail { visibility: hidden; }
+#lab.s4 #g4q[aria-expanded="true"] ~ :is(#lh, #logwrap) { display: none; }
 #lab.s45.calcon #figs > :not(#calc, #lh, #logwrap) { display: none; }
 #lab.s45.calcon #figs > #lh, #lab.s45.calcon #figs > #logwrap { visibility: visible; }
 #lab.s45 #calc { position: static; flex: none; order: -1; }
@@ -315,7 +351,6 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
 .g1 { align-items: end; }
 #start h2 label { display: inline; margin: 0; color: inherit; }
 #s1 .note { margin: 14px 0 0; }
-.rnote { margin: 0; color: var(--sub); }
 @media (max-height: 620px) { #histwrap { min-height: 3.4em; } }
 </style>
 </head>
@@ -359,8 +394,9 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
   <aside>
     <div id="exp">
     <div class="card" id="c2">
-      <div class="row2 one"><h2>② 조건 고르기</h2><div class="seg" id="cats"><button type="button" data-cat="0">촉매 없음</button><button type="button" data-cat="1">촉매 있음</button></div></div>
-      <div class="temps" id="temps"></div>
+      <div class="row2 one"><h2>②</h2><div class="seg" id="cats"><button type="button" data-cat="0">촉매 없음</button><button type="button" data-cat="1">촉매 있음</button></div><b id="tnow">— K</b></div>
+      <div id="tbox"><div id="trow"><input type="range" id="tsl" aria-label="온도"></div>
+      <div class="temps" id="temps"></div></div>
     </div>
     <div class="card" id="c3">
       <div class="row2 one"><h2>③ 실행</h2><button id="rend" type="button">실험하기</button><button id="rslow" type="button">천천히 보기</button></div>
@@ -381,30 +417,39 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
   </aside>
   <section id="figs">
     <div id="boxwrap"><canvas id="box"></canvas></div>
-    <div class="legend"><span><span class="dot" style="background:var(--a)"></span>A 공급구로 들어옴</span><span><span class="dot" style="background:var(--b)"></span>B 회수 탱크로</span><span id="cond"></span><span id="scene"></span></div>
-    <h2 id="histh">충돌 에너지 분포 (A끼리 충돌 · 가로 kJ/mol · 세로 충돌 수)</h2>
-    <div id="histwrap"><canvas id="hist"></canvas><p id="pre" class="note" hidden>· 온도 · 촉매를 고르고 「실험하기」 → 반응기 장면 · 충돌 그래프가 나옴</p></div>
-    <div class="card notes">
+    <div class="lrow"><div class="legend"><span><span class="dot" style="background:var(--a)"></span>A <span class="dot" style="background:var(--b)"></span>B</span><span id="scene"></span></div><button type="button" class="qx" id="wq" aria-expanded="false" aria-controls="words">? 말 풀이</button></div>
+    <h2 id="histh">충돌 에너지(kJ/mol)별 충돌 수</h2>
+    <div id="histwrap"><canvas id="hist"></canvas><p id="pre" class="note" hidden>· 온도 · 촉매를 고르고 「실험하기」</p></div>
+    <div class="card notes" id="words" hidden>
       <div class="note">전체 충돌 = A 끼리 부딪친 횟수 · 유효 충돌 = 그중 B 를 만든 충돌</div>
-      <div class="note">생성물 비율 = 회수한 B ÷ (반응기 A 100 + 회수한 B)</div>
+      <div class="note">생성물 비율 = <span class="fr"><span>회수한 B</span><span>반응기 A 100 + 회수한 B</span></span></div>
       <div class="note">기준 온도 = 촉매 없음 · 있음 비교 · 속도 증가비 구하는 온도</div>
       <div class="note">충돌 수 · 회수한 B = 관찰 시간 동안 센 값</div>
     </div>
     <div class="card notes" id="g4n">
+      <div id="g4all" hidden>
       <p class="t">쓸 수 있는 식</p>
-      <p>· 생성물 비율 = 회수한 B ÷ <span class="nw">(반응기 A 100 + 회수한 B)</span></p>
-      <p>· 유효 충돌 몫 = 유효 충돌 ÷ 전체 충돌</p>
+      <p>· 생성물 비율 = <span class="fr"><span>회수한 B</span><span>반응기 A 100 + 회수한 B</span></span></p>
+      <p>· 유효 충돌 몫 = <span class="fr"><span>유효 충돌</span><span>전체 충돌</span></span></p>
       <p>· ΔS전체 = ΔS계 + ΔS주위</p>
-      <p>· 이 밖에 교육과정 밖 식은 본평가에서 0점</p>
-      <p class="ind"><span class="nw">(아레니우스 식 · 깁스 에너지 식 등)</span></p>
-      <p>· 속도 증가비 = <span class="nw">(촉매 있음 값)</span> ÷ <span class="nw">(촉매 없음 값)</span></p>
+      <p>· 속도 증가비 = <span class="fr"><span>촉매 있음 값</span><span>촉매 없음 값</span></span></p>
       <p class="ind">같은 온도 · 같은 관찰 시간</p>
       <p class="ind">값 = 회수한 B 또는 유효 충돌 몫</p>
-      <p>· 또는 속도 증가비 = 한 번의 실행에서</p>
-      <p class="ind"><span class="nw">(Ea(촉매 있음)보다 큰 충돌 수)</span></p>
-      <p class="ind"><span class="nw">÷ (Ea(촉매 없음)보다 큰 충돌 수)</span></p>
-      <p>· 계산은 화면 오른쪽 위 <span class="nw">「계산기」만(손 계산도 됨)</span> · 휴대폰 · PC 계산기 안 씀</p>
+      <p>· 또는 속도 증가비 =</p>
+      <p class="ind"><span class="fr"><span>Ea(촉매 있음)보다 큰 충돌 수</span><span>Ea(촉매 없음)보다 큰 충돌 수</span></span></p>
+      <p class="ind">한 번의 실행에서</p>
+      <p>· 교육과정 밖 식은 교육과정 안 식으로 풀어 설명하면 인정(설명 못 하면 0점)</p>
+      <p class="ind"><span class="nw">(아레니우스 식 · 깁스 에너지 식 등)</span></p>
+      <p class="ind">· 교과서 · 수업에서 배운 식은 0점 아님</p>
+      <p>· 계산은 「계산기」만(손 계산도 됨) · <span class="nw">휴대폰 · PC 계산기 안 씀</span></p>
+      </div>
+      <div id="g4s">
+      <p>· 속도 증가비 = <span class="fr"><span>촉매 있음 값</span><span>촉매 없음 값</span></span></p>
+      <p>· 유효 충돌 몫 = <span class="fr"><span>유효 충돌</span><span>전체 충돌</span></span></p>
+      <p>· 교육과정 밖 식은 교육과정 안 식으로 풀어 설명하면 인정(설명 못 하면 0점)</p>
+      </div>
     </div>
+    <button type="button" class="qx" id="g4q" aria-expanded="false" aria-controls="g4all g4s">? 식 모두</button>
     <div id="calc" hidden>
       <div class="crow"><span class="note">④ 결과 · 목록 숫자를 누르면 들어감</span><button id="cclose" type="button">닫기</button></div>
       <div id="cscr"><div id="cexp"></div><div id="cans"></div></div>
@@ -419,7 +464,6 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
         <div class="sec" data-s="1">
           <h2>[1] 반응 조건</h2>
           <p class="ask">화면 ① 반응 정보의 값을 그대로 적음</p>
-          <p class="ask">· 되돌리기 = 한 걸음 뒤로 · 되살리기 = 다시 앞으로</p>
           <div class="g1">
             <div><label for="f-dH">반응 엔탈피 ΔH</label><div class="w"><input id="f-dH" data-f="s1.dH"><span class="u">kJ/mol</span></div></div>
             <div><label for="f-EaN">활성화 에너지 Ea(촉매 없음)</label><div class="w"><input id="f-EaN" data-f="s1.EaN"><span class="u">kJ/mol</span></div></div>
@@ -431,8 +475,7 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
         </div>
         <div class="sec" data-s="2" hidden>
           <h2>[2] 기준 온도 측정값</h2>
-          <p class="ask">기준 온도에서 「실험하기」 뒤 화면 ④ 결과 칸의 값을 적음</p>
-          <p class="ask">· 촉매 없음 · 촉매 있음 둘 다 「실험하기」 → 각 줄에 적음</p>
+          <p class="ask">촉매 없음 · 있음 각각 「실험하기」 → ④ 값을 그 줄에 적음</p>
           <div class="g2">
             <span></span><span class="lab">전체 충돌</span><span class="lab">유효 충돌</span><span class="lab">회수한 B</span><span class="lab">생성물 비율</span>
             <span class="lab">촉매 없음</span><input data-f="s2.no.aa" aria-label="촉매 없음 전체 충돌"><input data-f="s2.no.eff" aria-label="촉매 없음 유효 충돌"><input data-f="s2.no.nB" aria-label="촉매 없음 회수한 B"><input data-f="s2.no.ratio" aria-label="촉매 없음 생성물 비율">
@@ -460,14 +503,13 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
           <div class="g4">
             <label for="f-formula">식</label><textarea id="f-formula" data-f="s4.formula" rows="1"></textarea>
             <label for="f-sub">대입</label><textarea id="f-sub" data-f="s4.sub" rows="1"></textarea>
-            <label for="f-ans">답</label><div class="ans"><input id="f-ans" data-f="s4.ans"><span class="u">(소수 둘째 자리까지)</span></div>
+            <label for="f-ans">답</label><div class="ans"><input id="f-ans" data-f="s4.ans"><button type="button" id="calc2">계산기</button><span class="u">(소수 둘째 자리까지)</span></div>
           </div>
         </div>
         <div class="sec" data-s="5" hidden>
           <h2>[5] 최저 온도 찾기</h2>
           <p class="ask">목표 생성물 비율을 얻는 최저 온도를 촉매 없음에서 찾으시오.</p>
           <p class="ask">· 최저 온도: 화면 생성물 비율이 목표 이상이 처음 되는 온도</p>
-          <p class="ask">· 표의 칸은 실험 목록의 온도마다 생김 · 촉매 없음 줄에 화면 생성물 비율을 적음</p>
           <div id="g5"></div>
           <div class="tline"><span class="lab">최저 온도</span><label for="f-tminN">촉매 없음</label><input id="f-tminN" data-f="s5.tminN"><span class="u">K</span></div>
         </div>
@@ -479,7 +521,7 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
         </div>
       </div>
       <p id="more" hidden>▼ 아래에 칸 더 있음</p>
-      <div class="foot"><button type="button" id="prev">◀ 이전</button><button type="button" id="next">다음 ▶</button><span class="sp"></span><button type="button" id="undo" title="Ctrl+Z">되돌리기</button><button type="button" id="again" title="Ctrl+Y">되살리기</button><button type="button" id="sub">제출</button></div>
+      <div class="foot"><button type="button" id="prev">◀ 이전</button><button type="button" id="next">다음 ▶</button><span class="sp"></span><button type="button" id="undo" title="한 걸음 뒤로 (Ctrl+Z)"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 2.5 2 6l3.5 3.5M2.5 6H10a4 4 0 0 1 0 8H7"/></svg>되돌리기</button><button type="button" id="again" title="다시 앞으로 (Ctrl+Y)"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 2.5 2 6l3.5 3.5M2.5 6H10a4 4 0 0 1 0 8H7"/></svg>되살리기</button><button type="button" id="sub">제출</button></div>
     </div>
     </div>
     <h2 class="lh" id="lh">지금까지 한 실험</h2>
@@ -494,7 +536,6 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
 <div id="cf" class="ovl" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="cfh">
   <h2 id="cfh">제출 확인</h2>
   <div class="cfn" id="cfn"></div>
-  <p class="note">· 「[1] 빈 칸 …」 단추를 누르면 그 절의 빈 칸으로 감</p>
   <p class="warn">· 빈 칸이 있어도 제출됨<br>· 제출하면 고칠 수 없음</p>
   <div class="row"><button type="button" id="cfback">돌아가서 더 쓰기</button><button type="button" id="cfgo" class="go">제출하기</button></div>
 </div></div>
@@ -506,9 +547,8 @@ aside { display: flex; flex-direction: column; gap: 6px; min-width: 0; min-heigh
   <button type="button" id="sfback">돌아가서 더 쓰기</button>
 </div></div>
 <section id="res" hidden>
-  <p class="rtop"><span id="rtx">틀린 칸을 고쳐 다시 내 볼 수 있음 · 새 조건으로 한 번 더 해 볼 수도 있음</span><span id="rcmp"></span></p>
+  <p class="rtop"><span id="rtx"></span><span id="rcmp"></span></p>
   <div class="rhead"><h2>연습 결과</h2><span>· 본평가에서는 결과가 나오지 않음</span><span class="sp"></span><button type="button" id="pfix" class="go">틀린 칸 고쳐 다시 제출</button><button type="button" id="pnew">새 조건으로 한 번 더</button><button type="button" id="pnext">다음 사람</button></div>
-  <p class="rnote">· 요소 1 = [1]~[3] · E = 틀린 칸 수 · ±2 % 안 = 다시 계산한 값과 2 % 안<br>· 다음 사람 = 이 기록을 모두 지우고 처음 화면 · 새 조건으로 한 번 더 = 새 값으로 처음부터</p>
   <div class="rgrid"><div class="rcol" id="rc1"></div><div class="rcol" id="rc2"></div><div class="rcol" id="rc3"></div></div>
 </section>
 <div id="nx" class="ovl" hidden><div class="dlg" role="dialog" aria-modal="true" aria-labelledby="nxh">
@@ -764,13 +804,14 @@ function grNum(s) {
   const m = /^([+-]?(?:\d+(?:\.\d*)?|\.\d+))(%)?(?:kJ\/mol|kJ|초|s|K|개|회|번)?$/i.exec(t);
   return m ? +m[1] / (m[2] ? 100 : 1) : null;
 }
+const grAns = s => (grBlank(s) ? null : grNum(grNorm(s).replace(/[≈≒]/g, '=').replace(/^.*=/, '').replace(/^\s*약/, '').replace(/\(?\s*배\s*\)?\s*$/, '')));
 const grSame = (v, x) => v !== null && x !== null && Math.abs(v - x) <= 1e-9 * Math.max(1, Math.abs(x));
 const grNear = (w, x) => { const d = (/\.(\d+)/.exec(w) || ['', ''])[1].length; return Math.abs(+w - x) < Math.pow(10, -d) + 1e-12; };
 const GR_NUM = /\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?|\.\d+/g;
 const grOpOf = s => { const t = s.replace(/[\s()]/g, ''); return /^[÷/]$/.test(t) ? '나눗셈' : /^-$/.test(t) ? '뺄셈' : /^[×x*·]$/i.test(t) ? '곱셈' : /^\+$/.test(t) ? '덧셈' : '모름'; };
 function grReadSub(s) {
   if (grBlank(s)) return null;
-  const segs = grNorm(s).split('=').map(g => { const ns = [...g.matchAll(GR_NUM)]; return { g, ns }; }).filter(x => x.ns.length === 2 || x.ns.length === 4);
+  const segs = grNorm(s).replace(/[≈≒]/g, '=').split('=').map(g => { const ns = [...g.matchAll(GR_NUM)]; return { g, ns }; }).filter(x => x.ns.length === 2 || x.ns.length === 4);
   if (segs.length !== 1) return null;
   const { g, ns } = segs[0], w = ns.map(m => m[0].replace(/,/g, '')), between = i => g.slice(ns[i].index + ns[i][0].length, ns[i + 1].index);
   const ops = ns.slice(1).map((_, i) => grOpOf(between(i)));
@@ -823,44 +864,57 @@ function grJudge(sub, k) {
   const e1empty = s12blank && gr.empty;
   const e1 = gr.reversed ? '하 20 (높낮이 반대)' : e1empty ? '하 20 (요소 1 통째 빈)' : E >= 3 ? '하 20 (E 3 이상)' : E === 0 ? '상 40' : '중 30';
   const s4 = sh.s4 || {}, s5 = sh.s5 || {}, basis = Array.isArray(s4.basis) ? s4.basis : [];
-  const noF = grBlank(s4.formula), noSub = grBlank(s4.sub), hasProc = !noF || !noSub, ans = grNum(s4.ans), memo = [];
+  const noF = grBlank(s4.formula), noSub = grBlank(s4.sub), hasProc = !noF || !noSub, ans = grAns(s4.ans), memo = [];
   if (hasProc && noF) memo.push('식 칸 빈 칸 → 상 아님(경계안 3절)');
   if (hasProc && noSub) memo.push('대입 칸 빈 칸');
+  const rdA = noF && noSub ? grReadSub(s4.ans) : null, ansProc = !!rdA && rdA.op !== '모름';
+  if (ansProc) memo.push('답 칸에 계산 과정 · 교사 확인');
+  if (!grBlank(s4.ans) && ans === null) memo.push('답 칸 수를 못 읽음 · 교사 확인');
   const sv = (side, f) => grNum(grG(sh, 's2', side, f)), four = [sv('cat', 'eff'), sv('cat', 'aa'), sv('no', 'eff'), sv('no', 'aa')];
   const mine = { nB: sv('cat', 'nB') !== null && sv('no', 'nB') ? [sv('cat', 'nB'), sv('no', 'nB')] : null,
     frac: four.every(x => x !== null) && four[1] && four[2] && four[3] ? [four[0] / four[1], four[2] / four[3]] : null };
-  const rd = grReadSub(s4.sub);
+  const pairEq = (p, q) => grSame(p[0], q[0]) && grSame(p[1], q[1]);
+  const hit = r => {
+    const fracEq = (q4, ratioPair) => r.raw4 ? q4 && r.raw4.every((v, i) => grSame(v, q4[i])) : ratioPair && grNear(r.aw, ratioPair[0]) && grNear(r.bw, ratioPair[1]);
+    const scr = { nB: pairEq([r.a, r.b], [rc.nB, rn.nB]), above: pairEq([r.a, r.b], [rn.qC, rn.qN]) || pairEq([r.a, r.b], [rc.qC, rc.qN]),
+      frac: fracEq([rc.eff, rc.aa, rn.eff, rn.aa], [rc.eff / rc.aa, rn.eff / rn.aa]) };
+    const mi = { nB: !!mine.nB && pairEq([r.a, r.b], mine.nB), frac: !!mine.frac && fracEq(four, mine.frac) };
+    const rev = pairEq([r.b, r.a], [rc.nB, rn.nB]) || pairEq([r.b, r.a], [rn.qC, rn.qN]) || pairEq([r.b, r.a], [rc.qC, rc.qN]) || (!!mine.nB && pairEq([r.b, r.a], mine.nB));
+    return { scr, mi, rev, any: ['nB', 'above', 'frac'].some(m => scr[m]) || ['nB', 'frac'].some(m => mi[m]) || rev };
+  };
+  const fStr = noSub && !noF ? grNorm(s4.formula).replace(/([A-Za-zΑ-Ωα-ω가-힣])\d+/g, '$1') : '';
+  let rdF = fStr ? grReadSub(fStr) : null;
+  if (rdF && rdF.op !== '나눗셈') rdF = null;
+  if (fStr && !rdF && (fStr.match(GR_NUM) || []).length >= 2) memo.push('식 칸 수를 대입으로 못 봄 · 교사 확인');
+  const rd = rdF || grReadSub(s4.sub);
+  if (rd && rd === rdF) memo.push('식 칸의 대입 수로 봄');
   let recalc = null, method = null, viaScreen = false, viaMine = false, teacher = false;
   if (rd) {
-    const pairEq = (p, q) => grSame(p[0], q[0]) && grSame(p[1], q[1]);
-    const fracEq = (q4, ratioPair) => rd.raw4 ? q4 && rd.raw4.every((v, i) => grSame(v, q4[i])) : ratioPair && grNear(rd.aw, ratioPair[0]) && grNear(rd.bw, ratioPair[1]);
-    const scr = { nB: pairEq([rd.a, rd.b], [rc.nB, rn.nB]), above: pairEq([rd.a, rd.b], [rn.qC, rn.qN]) || pairEq([rd.a, rd.b], [rc.qC, rc.qN]),
-      frac: fracEq([rc.eff, rc.aa, rn.eff, rn.aa], [rc.eff / rc.aa, rn.eff / rn.aa]) };
-    const mi = { nB: !!mine.nB && pairEq([rd.a, rd.b], mine.nB), frac: !!mine.frac && fracEq(four, mine.frac) };
-    const rev = pairEq([rd.b, rd.a], [rc.nB, rn.nB]) || pairEq([rd.b, rd.a], [rn.qC, rn.qN]) || pairEq([rd.b, rd.a], [rc.qC, rc.qN]) || (!!mine.nB && pairEq([rd.b, rd.a], mine.nB));
+    const { scr, mi, rev } = hit(rd);
     method = ['nB', 'above', 'frac'].find(m => scr[m]) || ['nB', 'frac'].find(m => mi[m]) || (rev ? 'nB' : null) || (basis.length === 1 ? basis[0] : null);
     viaScreen = !!['nB', 'above', 'frac'].find(m => scr[m]); viaMine = !!['nB', 'frac'].find(m => mi[m]);
     if (rev && !viaScreen && !viaMine) memo.push('나누는 순서 반대');
+    if (method && !viaScreen && !viaMine && !rev) memo.push('대입 수가 [2] · 화면 값과 다름 · 교사 확인');
     if (rd.op !== '나눗셈') memo.push('셈 기호: ' + rd.op);
     if (viaScreen) recalc = rd.a / rd.b;
     else if (method === 'nB') recalc = mine.nB ? mine.nB[0] / mine.nB[1] : null;
     else if (method === 'frac') recalc = mine.frac ? mine.frac[0] / mine.frac[1] : null;
     else if (method === 'above') { recalc = rn.qC / rn.qN; memo.push('Ea 보다 큰 충돌 수가 정답표와 다름 → 단순 계산 오류로 봄'); }
-    if (recalc === null) teacher = true;
+    if (recalc === null) teacher = rd !== rdF || !rev;
   } else if (!noSub) teacher = true;
   const inRange = recalc !== null && ans !== null && ans / recalc >= 0.98 - 1e-12 && ans / recalc <= 1.02 + 1e-12;
   const calcOK = !teacher && inRange && rd && rd.op === '나눗셈' && !(method === 'above' && !viaScreen) && !memo.includes('나누는 순서 반대');
   const minN = grSame(grNum(s5.tminN), k.answers.Tmin_screen.no_cat), minC = grSame(grNum(s5.tminC), k.answers.Tmin_screen.cat), nMin = minN + minC;
   const s45blank = ['formula', 'sub', 'ans'].every(f => grBlank(s4[f])) && !basis.length && Object.values(s5).every(v => (v && typeof v === 'object') ? Object.values(v).every(grBlank) : grBlank(v));
-  const e2 = s45blank ? '하 10 (요소 2 통째 빈)' : !hasProc ? '하 10 (계산 과정 없음)' : nMin === 0 ? '하 10 (최저 온도 둘 다 틀림)' : nMin === 1 || noF ? '중 20'
+  const e2 = s45blank ? '하 10 (요소 2 통째 빈)' : !hasProc && !ansProc ? '하 10 (계산 과정 없음)' : nMin === 0 ? '하 10 (최저 온도 둘 다 틀림)' : nMin === 1 || noF ? '중 20'
     : teacher ?'교사 확인 (상 30 또는 중 20 · 대입 줄에서 두 수를 못 읽음)' : calcOK ? '상 30' : '중 20';
   const why = [];
   const s2blank = GR_SIDES.every(([s]) => GR_S2.every(([f]) => grBlank(grG(sh, 's2', s, f))));
-  if (ans !== null && !hasProc && s2blank) why.push('측정 기록 · 계산 과정 없이 답만 있음');
+  if (ans !== null && !hasProc && !ansProc && s2blank) why.push('측정 기록 · 계산 과정 없이 답만 있음');
   const fromMine = [mine.nB && mine.nB[0] / mine.nB[1], mine.frac && mine.frac[0] / mine.frac[1]].filter(x => x);
   if (ans !== null && !viaScreen && !viaMine && !fromMine.some(x => ans / x >= 0.98 && ans / x <= 1.02)) why.push('적은 측정값으로 나올 수 없는 답');
   const outside = ['formula', 'sub', 'ans'].map(f => s4[f]).concat(['ga', 'na', 'da'].map(f => grG(sh, 's6', f))).filter(x => !grBlank(x)).some(x => GR_OUTSIDE.test(grNorm(x)));
-  if (outside) why.push('교육과정 밖 식 흔적');
+  if (outside) why.push('교육과정 밖 식 흔적 · 풀이가 없을 때만 질의');
   const runs = Array.isArray(sub.runs) ? sub.runs : [];
   for (const [side, sn, cat] of GR_SIDES) {
     const filled = GR_S2.filter(([f]) => !grBlank(grG(sh, 's2', side, f)));
@@ -985,6 +1039,8 @@ function sync() {
   for (const el of $('temps').children) { el.disabled = b; el.classList.toggle('on', +el.dataset.t === selT); }
   for (const el of $('cats').children) { el.disabled = b; el.classList.toggle('on', (el.dataset.cat === '1') === selCat); }
   for (const id of ['rend', 'rslow']) $(id).disabled = !s || finishing;
+  const tsl = $('tsl'); tsl.disabled = b; tsl.value = selT || M.TEMPS[0]; tsl.classList.toggle('none', !selT); $('tnow').textContent = (selT || '—') + ' K';
+  $('tbox').classList.toggle('first', !s && !log.size);
   $('rslow').textContent = rate === SLOW ? '멈춤' : '천천히 보기'; $('rslow').classList.toggle('on', rate === SLOW); ptodo();
 }
 function pick(T, cat) {
@@ -994,7 +1050,6 @@ function pick(T, cat) {
 }
 function newRun() {
   s = M.setup(seed, selT, selCat, v); sv = M.setup(seed, selT, selCat, v); tShow = 0; rate = 0; finishing = false; lastHist = -1; fresh = true; got = false;
-  $('cond').textContent = selT + ' K · 촉매 ' + (selCat ? '있음' : '없음');
   setStatus('준비'); paint(); stats(); hist();
 }
 function setStatus(t) { $('status').textContent = t; sync(); }
@@ -1002,7 +1057,7 @@ function check() {
   if ($('go').disabled) return;
   const id = M.normId($('sid').value);
   if (!id) { $('msg').textContent = '학번 입력 필요'; return; }
-  pendId = id; $('msg').textContent = ''; $('idbig').textContent = id; $('s1').hidden = true; $('s2').hidden = false;
+  pendId = id; $('msg').textContent = ''; $('idbig').textContent = id; $('s1').hidden = true; $('s2').hidden = false; $('ok').focus();
 }
 function reenter() { $('s2').hidden = true; $('s1').hidden = false; $('sid').focus(); $('sid').select(); }
 function begin() {
@@ -1018,7 +1073,7 @@ function begin() {
   hs = [JSON.stringify(sheet)]; hi = 0; lastKey = null; pend = null; drawLog();
   $('start').hidden = true; $('s2').hidden = true; $('s1').hidden = PRACTICE; $('lab').hidden = false; $('home').hidden = PRACTICE; $('calcbtn').hidden = false;
   showSec(1); render(); if (!(old && old.done)) save(); tick(); note(old ? '이어서 씀 · 이 PC 에 남은 기록을 불러옴' : '', 10000);
-  $('cond').textContent = ''; fit(); paint(); hist(); stats(); setStatus('준비');
+  fit(); paint(); hist(); stats(); setStatus('준비');
    if (PRACTICE && old && old.done) practiceSubmit(true); 
 }
 function home() {
@@ -1057,7 +1112,7 @@ function paint() {
   bx.font = CANVAS_FONT + 'px "Malgun Gothic",sans-serif'; bx.fillStyle = '#46505e';
   arrow(ox + 10 * sc, PY(OUT_Y), X0 - 4, '#2f6fd0');
   bx.fillStyle = '#2f6fd0'; text(bx, 'inlet', '공급구', 0, Y0 - 4, 'left', 'bottom');
-  const TX = PX(M.W + GAP), TY = Y0, TH = BH, tl = s ? '회수 탱크 · B ' + s.nB + '개' : '회수 탱크', tlw = bx.measureText(tl).width, ow = bx.measureText('회수구').width;
+  const TX = PX(M.W + GAP), TY = Y0, TH = BH, tl = '회수 탱크', tlw = bx.measureText(tl).width, ow = bx.measureText('회수구').width;
   arrow(X0 + BW + 4, PY(OUT_Y), TX - 4, '#e07b1a');
   bx.fillStyle = '#9a4f0c'; text(bx, 'outlet', '회수구', Math.min(X0 + BW + GAP * sc / 2 + ow / 2, w - tlw - 12), Y0 - 4, 'right', 'bottom');
   const lv = s ? Math.min(1, s.nB / TANK_FULL) * TH : 0;
@@ -1086,14 +1141,14 @@ function paint() {
 }
 function fmt(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
 function stats() {
-  const t = !s ? 0 : got ? s.tObs : finishing ? s.now : tShow, scene = !!sv && tShow > 0;
+  const t = !s ? 0 : got ? s.tObs : finishing ? s.now : tShow, scene = !!sv && rate === SLOW;
   $('o-t').textContent = t.toFixed(1) + ' 초'; $('bar').style.width = (s ? 100 * t / s.tObs : 0) + '%';
   const put = (id, f) => { $(id).textContent = got ? f() : '—'; };
   put('o-aa', () => fmt(s.aa)); put('o-eff', () => fmt(s.nB)); put('o-na', () => M.NA); put('o-nb', () => fmt(s.nB)); put('o-r', () => M.ratioStr(s.nB));
-  $('rcond').textContent = !s ? '· 온도를 고르고 「실험하기」' : got ? s.T + ' K · 촉매 ' + (s.cat ? '있음' : '없음')
+  $('rcond').textContent = !s ? '' : got ? s.T + ' K · 촉매 ' + (s.cat ? '있음' : '없음')
     : finishing ? '계산 중' : fresh ? '· 새 조건 · 「실험하기」 누름' : sv.done ? '· 장면 끝 · 값은 「실험하기」 로' : '· 장면 보는 중 · 값은 「실험하기」 로';
-  $('scene').textContent = scene ? '장면 ' + tShow.toFixed(1) + ' / ' + sv.tObs + ' 초 · 장면 속 B ' + fmt(sv.nB) + '개(기록 값은 ④)' : '';
-  $('pre').hidden = got || log.size > 0 || tShow > 0;
+  $('scene').textContent = scene ? '장면 ' + tShow.toFixed(1) + ' / ' + sv.tObs + ' 초' : '';
+  $('pre').hidden = !!s || log.size > 0;
   $('tail').textContent = got ? 'Ea(촉매 없음)보다 큰 충돌 수 ' + fmt(s.qN) + '회 · Ea(촉매 있음)보다 큰 충돌 수 ' + fmt(s.qC) + '회' : '';
 }
 function record() {
@@ -1119,21 +1174,21 @@ function hist() {
   if (!v || !w) return;
   hx.font = CANVAS_FONT + 'px "Malgun Gothic",sans-serif';
   const xmax = Math.max(40, v.EaN + 6); let top = 1; if (g) for (let i = 0; i < xmax; i++) top = Math.max(top, g.hist[i]);
-  const L = (g ? hx.measureText(fmt(top)).width : 0) + 14, B = CANVAS_FONT + 10, pw = w - L - 12, ph = h - B - 8;
-  const X = e => L + pw * e / xmax, Y = c => 8 + ph - ph * c / top;
-  hx.fillStyle = 'rgba(176,58,46,0.10)'; hx.fillRect(X(v.EaN), 8, X(xmax) - X(v.EaN), ph);
-  hx.fillStyle = 'rgba(31,95,191,0.10)'; hx.fillRect(X(v.EaC), 8, X(v.EaN) - X(v.EaC), ph);
+  const T0 = CANVAS_FONT + 10;
+  const L =(g ? hx.measureText(fmt(top)).width : 0) + 14, B = CANVAS_FONT + 10, pw = w - L - 12, ph = h - B - T0;
+  const X = e => L + pw * e / xmax, Y = c => T0 + ph - ph * c / top;
+  hx.fillStyle = 'rgba(176,58,46,0.10)'; hx.fillRect(X(v.EaN), T0, X(xmax) - X(v.EaN), ph);
+  hx.fillStyle = 'rgba(31,95,191,0.10)'; hx.fillRect(X(v.EaC), T0, X(v.EaN) - X(v.EaC), ph);
   hx.fillStyle = '#5a7fb8';
-  if (g) for (let i = 0; i < xmax; i++) if (g.hist[i]) { const y = Y(g.hist[i]); hx.fillRect(X(i) + 0.5, y, Math.max(1, X(i + 1) - X(i) - 1), 8 + ph - y); }
-  hx.strokeStyle = '#20262e'; hx.lineWidth = 2; hx.setLineDash([]); hx.beginPath(); hx.moveTo(L, 8); hx.lineTo(L, 8 + ph); hx.lineTo(L + pw, 8 + ph); hx.stroke();
+  if (g) for (let i = 0; i < xmax; i++) if (g.hist[i]) { const y = Y(g.hist[i]); hx.fillRect(X(i) + 0.5, y, Math.max(1, X(i + 1) - X(i) - 1), T0 + ph - y); }
+  hx.strokeStyle = '#20262e'; hx.lineWidth = 2; hx.setLineDash([]); hx.beginPath(); hx.moveTo(L, T0); hx.lineTo(L, T0 + ph); hx.lineTo(L + pw, T0 + ph); hx.stroke();
   hx.fillStyle = '#46505e';
-  for (let e = 0; e <= xmax; e += 10) text(hx, 'x' + e, String(e), X(e), 8 + ph + 4, 'center', 'top');
-  if (g) text(hx, 'ymax', fmt(top), L - 6, 8 + CANVAS_FONT / 2, 'right', 'middle');
-  const ym = g ? drawn.ymax.x1 : L;
+  for (let e = 0; e <= xmax; e += 10) text(hx, 'x' + e, String(e), X(e), T0 + ph + 4, 'center', 'top');
+  if (g) text(hx, 'ymax', fmt(top), L - 6, T0 + CANVAS_FONT / 2, 'right', 'middle');
   for (const [e, col, dash, lab, al] of [[v.EaN, '#b03a2e', [], 'Ea(촉매 없음)', 'left'], [v.EaC, '#1f5fbf', [8, 6], 'Ea(촉매 있음)', 'right']]) {
-    hx.strokeStyle = col; hx.lineWidth = 3; hx.setLineDash(dash); hx.beginPath(); hx.moveTo(X(e), 8); hx.lineTo(X(e), 8 + ph); hx.stroke(); hx.setLineDash([]);
-    const lw = hx.measureText(lab).width, low = al === 'right' && X(e) - 6 - lw < ym + 12, side = low && X(e) - 6 - lw < L + 4 ? 'left' : al;
-    hx.fillStyle = col; text(hx, lab, lab, X(e) + (side === 'left' ? 6 : -6), low ? 10 + CANVAS_FONT + 8 : 10, side, 'top', '#fff');
+    hx.strokeStyle = col; hx.lineWidth = 3; hx.setLineDash(dash); hx.beginPath(); hx.moveTo(X(e), T0); hx.lineTo(X(e), T0 + ph); hx.stroke(); hx.setLineDash([]);
+    const side = al === 'right' && X(e) - 6 - hx.measureText(lab).width < 0 ? 'left' : al;
+    hx.fillStyle = col; text(hx, lab, lab, X(e) + (side === 'left' ? 6 : -6), 3, side, 'top');
   }
   if (g) lastHist = g.aa;
 }
@@ -1153,15 +1208,18 @@ function frame(now) {
 }
 function slowPlay() {
   if (!s || finishing) return;
-  if (rate === SLOW) { rate = 0; setStatus('멈춤'); return; }
+  if (rate === SLOW) { rate = 0; stats(); setStatus('멈춤'); return; }
   if (sv.done) { sv = M.setup(seed, s.T, s.cat, v); tShow = 0; hist(); }
   rate = SLOW; fresh = false; stats(); setStatus('천천히 재생 중');
 }
 function finish() { if (!s) return; if (s.done) newRun(); rate = 0; finishing = true; fresh = false; stats(); setStatus('계산 중'); }
 
-for (const T of M.TEMPS) { const b = document.createElement('button'); b.type = 'button'; b.dataset.t = T; b.textContent = T + ' K'; b.onclick = () => pick(T, selCat); $('temps').appendChild(b); }
+M.TEMPS.forEach((T, k) => { const b = document.createElement('button'); b.type = 'button'; b.dataset.t = T; b.textContent = T; b.setAttribute('aria-label', T + ' K'); b.style.setProperty('--i', k * 10 / (M.TEMPS.length - 1)); b.onclick = () => pick(T, selCat); $('temps').appendChild(b); });
+Object.assign($('tsl'), { min: M.TEMPS[0], max: M.TEMPS[M.TEMPS.length - 1], step: M.TEMPS[1] - M.TEMPS[0] });
+$('tsl').oninput = $('tsl').onclick = () => pick(+$('tsl').value, selCat);
+$('tsl').onkeydown = e => { const k = e.key; if (k === 'Home' || k === 'End' || (!selT && ['ArrowLeft', 'ArrowDown', 'PageDown'].includes(k))) { e.preventDefault(); pick(M.TEMPS[k === 'End' ? M.TEMPS.length - 1 : 0], selCat); } };
 for (const b of $('cats').children) b.onclick = () => pick(selT, b.dataset.cat === '1');
-$('go').onclick = check; $('sid').onkeydown = e => { if (e.key === 'Enter') check(); };
+$('go').onclick = check; $('sid').onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); check(); } };
 $('ok').onclick = begin; $('redo').onclick = reenter;
 $('home').onclick = home; $('rslow').onclick = slowPlay; $('rend').onclick = finish;
 { const ro = new ResizeObserver(fit); ro.observe($('boxwrap')); ro.observe($('histwrap')); }
@@ -1169,13 +1227,14 @@ $('home').onclick = home; $('rslow').onclick = slowPlay; $('rend').onclick = fin
 const calc = window.RxCalc(), KMAP = { '*': '×', '/': '÷', '-': '−', 'Enter': '=', '=': '=', 'Backspace': '⌫', 'Escape': 'C' };
 function cshow() { const w = calc.view(); $('cexp').textContent = w.exp; $('cans').textContent = w.ans; $('cexp').scrollLeft = $('cans').scrollLeft = 1e6; }
 function cpress(k) { calc.press(k); cshow(); }
-function calcOpen(on) { $('calc').hidden = !on; $('lab').classList.toggle('calcon', on); $('calcbtn').classList.toggle('on', on); $('calcbtn').textContent = on ? '계산기 닫기' : '계산기'; ptodo(); }
+function calcOpen(on) { $('calc').hidden = !on; $('lab').classList.toggle('calcon', on); $('calcbtn').classList.toggle('on', on); $('calc2').classList.toggle('on', on); $('calcbtn').textContent = on ? '계산기 닫기' : '계산기'; ptodo(); }
 for (const k of '789÷456×123−0.=+()⌫C') {
   const b = document.createElement('button'); b.type = 'button'; b.textContent = k; b.dataset.k = k;
   if ('÷×−+()'.includes(k)) b.className = 'op'; if (k === '=') b.className = 'eq'; if (k === '⌫') b.setAttribute('aria-label', '지우기');
   b.onclick = () => cpress(k); $('ckeys').appendChild(b);
 }
-$('calcbtn').onclick = () => calcOpen($('calc').hidden); $('cclose').onclick = () => calcOpen(false);
+$('calcbtn').onclick = $('calc2').onclick = () => calcOpen($('calc').hidden); $('cclose').onclick = () => calcOpen(false);
+for (const b of document.querySelectorAll('.qx')) b.onclick = () => { const ts = b.getAttribute('aria-controls').split(' ').map($); for (const t of ts) t.hidden = !t.hidden; b.setAttribute('aria-expanded', String(!ts[0].hidden)); };
 const typing = el => !!el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable);
 document.addEventListener('keydown', e => {
   if ($('calc').hidden || typing(document.activeElement) || typing(e.target) || e.isComposing || e.keyCode === 229 || e.defaultPrevented || e.ctrlKey || e.altKey || e.metaKey) return;
@@ -1266,11 +1325,12 @@ function g5cols() {
   for (const r of log.values()) if (!PRACTICE || !r.cat) on.add((r.cat ? 'cat.' : 'no.') + r.T);
   for (const k of PRACTICE ? ['no'] : ['no', 'cat']) for (const t of T5) if (filled(sheet.s5[k][t])) on.add(k + '.' + t);
   const vis = T5.filter(t => on.has('no.' + t) || on.has('cat.' + t)), n = vis.length;
-  const nb = n > Math.max(1, Math.floor((g.clientWidth - 44) / 51)) ? 2 : 1, per = Math.max(1, Math.ceil(n / nb));
+  const nb = n > Math.max(1, Math.floor((g.clientWidth - g.querySelector('.rl').offsetWidth - 3) / 51)) ? 2 : 1, per = Math.max(1, Math.ceil(n / nb));
   g.style.setProperty('--n', per);
   for (const el of g.children) {
     const d = el.dataset, f = d.f && d.f.split('.'), t = f ? f[2] : d.t, i = t ? vis.indexOf(t) : -1;
     if (d.lb != null) { el.hidden = +d.lb >= nb; el.style.setProperty('--r', +d.lb * 3 + +d.row); continue; }
+    if (d.p) { const q = el.previousElementSibling; el.hidden = q.hidden || !q.disabled; el.style.cssText = q.style.cssText; continue; }
     el.hidden = i < 0; if (f) el.disabled = !on.has(f[1] + '.' + t);
     if (i >= 0) { el.style.setProperty('--c', i % per + 2); el.style.setProperty('--r', Math.floor(i / per) * 3 + +d.row); }
   }
@@ -1302,10 +1362,11 @@ function showSec(i) {
 for (let i = 1; i <= 6; i++) { const b = document.createElement('button'); b.type = 'button'; b.innerHTML = '[' + i + '] <span class="n"></span>'; b.onclick = () => showSec(i); $('tabs').appendChild(b); }
 (function () {
   const g = $('g5'), cell = (tag, cls, html, d) => { const el = document.createElement(tag); if (cls) el.className = cls; if (html) el.innerHTML = html; Object.assign(el.dataset, d); g.appendChild(el); return el; };
-  for (const blk of [0, 1]) { cell('span', 'lab', '온도(K)', { lb: blk, row: 1 }); cell('span', 'lab rl', '촉매<br>없음', { lb: blk, row: 2 }); if (!PRACTICE) cell('span', 'lab rl', '촉매<br>있음', { lb: blk, row: 3 }); }
+  for (const blk of [0, 1]) { cell('span', 'lab', '온도(K)', { lb: blk, row: 1 }); cell('span', 'lab rl', '생성물 비율<br>촉매 없음', { lb: blk, row: 2 }); if (!PRACTICE) cell('span', 'lab rl', '생성물 비율<br>촉매 있음', { lb: blk, row: 3 }); }
   T5.forEach(t => cell('span', 'lab', t, { t, row: 1 }));
   for (const [k, r, nm] of PRACTICE ? [['no', 2, '없음']] : [['no', 2, '없음'], ['cat', 3, '있음']]) T5.forEach(t => {
     const el = cell('input', '', '', { f: 's5.' + k + '.' + t, row: r }); el.setAttribute('aria-label', '촉매 ' + nm + ' ' + t + ' K 생성물 비율');
+    cell('span', 'ph', '실험<br>전', { p: 's5.' + k + '.' + t, row: r });
   });
 })();
 for (const bar of document.querySelectorAll('.syms')) for (const t of bar.dataset.k.split(' ')) {
@@ -1317,7 +1378,7 @@ for (const bar of document.querySelectorAll('.syms')) for (const t of bar.datase
   };
   bar.appendChild(b);
 }
-for (const el of document.querySelectorAll('#sheet [data-f]')) { el.placeholder = ' '; el.autocomplete = 'off'; el.spellcheck = false; }
+for (const el of document.querySelectorAll('#sheet [data-f]')) { el.placeholder = el.closest('.ap') ? '값' : ' '; el.autocomplete = 'off'; el.spellcheck = false; }
 const sh = $('sheet');
 sh.addEventListener('input', e => { const el = e.target; if (!el.dataset || !el.dataset.f || !getP(el.dataset.f.split('.').slice(0, -1).join('.'))) return; setP(el.dataset.f, el.value); commit('f:' + el.dataset.f); if (el.closest('.g6')) keep(el); });
 sh.addEventListener('focusin', e => {
@@ -1363,7 +1424,7 @@ function empties() {
 function askSubmit() {
   if (!curId) return;
   calcOpen(false); pend = null; render();
-  $('cfn').innerHTML = empties().map((n, i) => '<button type="button" data-s="' + (i + 1) + '"' + (n ? ' class="e"' : '') + '><span' + (n ? ' class="e"' : '') + '>[' + (i + 1) + '] 빈 칸 ' + n + '</span></button>').join('');
+  $('cfn').innerHTML = empties().map((n, i) => '<button type="button" data-s="' + (i + 1) + '"' + (n ? ' class="e"' : '') + '><span' + (n ? ' class="e"' : '') + '>[' + (i + 1) + '] 빈 칸 ' + n + (n ? ' →' : '') + '</span></button>').join('');
   ovl('cf', true); $('cfback').focus();
 }
 function payload() {
@@ -1487,7 +1548,7 @@ for (const a in AN) {
 }
 for (const h in HX) {
   const g = mk('g', { class: 'hd', tabindex: 0, 'data-h': h, role: 'slider', 'aria-label': HN[h], 'aria-valuemin': 0, 'aria-valuemax': 100 });
-  G.h[h] = { g, hit: mk('circle', { class: 'hit', r: 24 }, g) }; mk('circle', { class: 'dot', r: 11 }, g);
+  G.h[h] = { g, hit: mk('circle', { class: 'hit', r: 24 }, g) }; mk('circle', { class: 'dot', r: 11 }, g); mk('path', { class: 'ud', d: 'M-6 -16 L0 -23 L6 -16 Z M-6 16 L0 23 L6 16 Z' }, g);
 }
 const gx = h => GP.l + (svg.clientWidth - GP.l - GP.r) * HX[h];
 const gbot = () => svg.clientHeight - GP.b - GP.top;
@@ -1537,10 +1598,10 @@ function drawGraph() {
     H.g.classList.toggle('sel', !!pend && pend.from === h);
     G.lab[h].classList.toggle('on', h === act);
     [...G.lab[h].children].forEach((t, i) => { t.setAttribute('x', X[h]); t.setAttribute('y', ax + 6 + fs + (lrow[h] + i) * lh); });
-    G.gd[h].setAttribute('d', 'M' + X[h] + ' ' + (Y[h] + 14) + ' V' + ax);
+    G.gd[h].setAttribute('d', 'M' + X[h] + ' ' + (Y[h] + 24) + ' V' + ax);
   }
   const bx = (x0, y0, x1, y1) => ({ x0, y0, x1, y1 }), hitB = (p, q) => p.x0 < q.x1 && q.x0 < p.x1 && p.y0 < q.y1 && q.y0 < p.y1;
-  const dots = Object.keys(HX).map(h => bx(X[h] - 15, Y[h] - 15, X[h] + 15, Y[h] + 15)), lines = [], put = [];
+  const dots = Object.keys(HX).map(h => bx(X[h] - 15, Y[h] - 24, X[h] + 15, Y[h] + 24)), lines = [], put = [];
   for (const a in AN) {
     const A = G.ar[a], r = sheet.s3.arrows[a];
     if (!r) { A.g.style.display = 'none'; continue; }
@@ -1553,7 +1614,8 @@ function drawGraph() {
     A.line.setAttribute('d', 'M' + xs + ' ' + y0 + ' V' + (big ? y1 + (dn ? -10 : 10) : y1));
     A.head.setAttribute('d', big ? 'M' + xs + ' ' + y1 + ' L' + (xs - 7) + ' ' + (y1 + (dn ? -13 : 13)) + ' L' + (xs + 7) + ' ' + (y1 + (dn ? -13 : 13)) + ' Z' : '');
   }
-  const segs = lines.map(l => bx(l.x - 5, l.top - 2, l.x + 5, l.bot + 2)), cv = lines.length ? cpts(X, Y, 'TSn', w).concat(cpts(X, Y, 'TSc', w)) : [];
+  const hseg = (xa, xb, y) => bx(Math.min(xa, xb), y - 3, Math.max(xa, xb), y + 3);
+  const segs = lines.map(l => bx(l.x - 5, l.top - 2, l.x + 5, l.bot + 2)).concat(lines.flatMap(l => [hseg(X[l.r.from], l.x, l.y0), hseg(l.x, X[l.r.to], l.y1)])), cv = lines.length ? cpts(X, Y, 'TSn', w).concat(cpts(X, Y, 'TSc', w)) : [];
   for (const l of lines) {
     const A = G.ar[l.a]; A.txt.textContent = l.r.value;
     if (!filled(l.r.value)) { A.bg.setAttribute('width', 0); continue; }
@@ -1575,8 +1637,8 @@ new ResizeObserver(drawGraph).observe(svg);
 svg.addEventListener('focusin', drawGraph); svg.addEventListener('focusout', () => requestAnimationFrame(drawGraph));
 function hint() {
   svg.classList.toggle('picking', !!pend);
-  $('ahint').textContent = !pend ? '동그라미(손잡이)를 위아래로 끌기(↑↓ 키) · 화살표: 오른쪽 단추 → 시작 손잡이 → 끝 손잡이 · 화살표를 놓으면 그 값 칸이 열림'
-    : AN[pend.a] + ': ' + (pend.from ? HN[pend.from] + ' → 끝 손잡이 누름' : '시작 손잡이 누름') + ' · 단추 다시 누르면 그만둠';
+  $('ahint').textContent = !pend ? '화살표: 오른쪽 단추 → 시작 동그라미 → 끝 동그라미'
+    : (pend.from ? '끝' : '시작') + ' 동그라미 누름 · 그만두기 = 단추 다시';
 }
 function pickH(h) {
   if (!pend) return;
@@ -1666,7 +1728,7 @@ function pstep(live) {
   const go = cat => finishing ? null : selT !== v.Tref ? tb(v.Tref) : selCat !== cat ? cb(cat) : $('rend');
   const free = () => { if (finishing) return null; if (selT && !has(selT, selCat)) return $('rend'); const T = M.TEMPS.find(t => !has(t, selCat)); return T ? tb(T) : cb(!selCat); };
   const noA = A.find(a => !AR[a]), noV = A.find(a => AR[a] && !filled(AR[a].value));
-  const pj = !pend && pjust, t3 = pend ? AN[pend.a] + ' 화살표 · ' + (pend.from ? '끝' : '시작') + ' 손잡이 누름' : pj ? '방금 놓은 ' + AN[pj] + ' 화살표 값 적음' : noH ? HN[noH] + ' 손잡이를 끌어 높이 정함' : noA ? '화살표 단추 → 시작 손잡이 → 끝 손잡이' : '화살표 값 칸에 값 적음';
+  const pj = !pend && pjust, t3 = pend ? AN[pend.a] + ' 화살표 · ' + (pend.from ? '끝' : '시작') + ' 동그라미 누름' : pj ? '방금 놓은 ' + AN[pj] + ' 화살표 값 적음' : noH ? HN[noH] + ' 동그라미를 끌어 높이 정함' : noA ? '화살표 단추 → 시작 동그라미 → 끝 동그라미' : '화살표 값 칸에 값 적음';
   const tg = v.target.toFixed(2), sT = got && s && !s.cat ? String(s.T) : '', w5 = t => G2.num(S.s5.no[t]);
   const ti = T5.findIndex(t => { const x = w5(t); return x !== null && x >= v.target - 1e-9; }), ok5 = ti === 0 || (ti > 0 && w5(T5[ti - 1]) !== null);
   const s5 = selCat ? ['② 에서 촉매 없음 고름', () => finishing ? null : cb(false)] : sT && !filled(S.s5.no[sT]) ? ['④ 비율을 [5] 표 ' + sT + ' K 칸에 적음', () => F('s5.no.' + sT)]
@@ -1716,12 +1778,12 @@ function pfix() {
   for (const [sd, sn] of G2.SIDES) for (const [f, cn] of G2.S2) if (bad('[2] ' + sn + ' · ' + cn)) mk['s2.' + sd + '.' + f] = JSON.stringify(sh.s2[sd][f]);
   for (const a in AN) { const m = j.marks[AN[a]]; if (m === '바름') continue; if (/봉우리|아래 방향/.test(m)) mk['s3.g.' + a] = JSON.stringify([sh.s3.levels, sh.s3.arrows[a]]); else mk['s3.arrows.' + a] = JSON.stringify(sh.s3.arrows[a]); }
   if (j.reversed) mk['s3.levels'] = JSON.stringify(sh.s3.levels);
-  for (const f of ['formula', 'sub', 'ans']) if (!filled(sh.s4[f])) mk['s4.' + f] = JSON.stringify(sh.s4[f]);
+  for (const f of ['formula', 'sub', 'ans']) if (!filled(sh.s4[f]) && !(f === 'sub' && j.memo.includes('식 칸의 대입 수로 봄'))) mk['s4.' + f] = JSON.stringify(sh.s4[f]);
   if (j.recalc !== null && !j.inRange) mk['s4.ans'] = JSON.stringify(sh.s4.ans);
   if (!j.rd && filled(sh.s4.sub)) mk['s4.sub'] = JSON.stringify(sh.s4.sub);
   if (!j.minN) mk['s5.tminN'] = JSON.stringify(sh.s5.tminN);
   try { const o = JSON.parse(localStorage.getItem(skey(id))); delete o.done; localStorage.setItem(skey(id), JSON.stringify(o)); } catch (err) { }
-  pfput(Object.assign(pfget(id) || { id, n: 1, E: j.E, prevE: null, key: r.key }, { marks: mk }));
+  pfput(Object.assign(pfget(id) || { id, n: 1, E: Object.keys(mk).length, prevE: null, key: r.key }, { marks: mk }));
   $('res').hidden = true; pendId = id; begin(); note('');
   const f = Object.keys(mk)[0]; showSec(f ? +f[1] : 1);
 }
@@ -1780,29 +1842,31 @@ function showResult(body, k, rc, again) {
   const s1 = G2.S1.map(([f, nm, ok]) => tr(escH(nm.replace('[1] ', '').replace('활성화 에너지 ', '')), my(sh.s1[f]), mark(nm, ok === 'target' ? on.target : on[ok]))).join('');
   const gm = Object.entries(j.marks).map(([nm, m]) => tr(escH(nm), m === '바름' ? yes('바름') : no(m === '빠짐' ? '빠짐' : m.replace(/^틀림\((.*)\)$/, '틀림 · $1')) + ' · 바른 값 ' + shown(nm === 'ΔH' ? on.dH : nm.includes('없음') ? on.EaN : on.EaC))).join('')
     + tr('높낮이', j.reversed ? no('반대 · 생성물이 반응물보다 위') : yes('반대 아님'));
-  const e1t = String(j.e1).replace(/^(상|중|하) (\d+)(?: \((.*)\))?$/, (x, g, p, why) => g + '(' + p + '점)' + (why ? ' · ' + why : ''));
+  const e1t = String(j.e1).replace(/^(상|중|하) (\d+)(?: \((.*)\))?$/, (x, g, p, why) => g + '(' + p + '점)' + (why ? ' · ' + why.replace('E 3 이상', '틀린 칸 3개 이상') : ''));
   const s2 = G2.SIDES.map(([side, sn, cat]) => '<tr class="sub"><td colspan="3">' + sn + '</td></tr>' + G2.S2.map(([f, cn]) => {
     const r = row(cat), x = f === 'ratio' ? r.ratio : fmt(r[f]);
     return tr(cn, my(sh.s2[side][f]), mark('[2] ' + sn + ' · ' + cn, x));
   }).join('')).join('');
-  const rd = j.rd ? (j.rd.raw4 ? j.rd.raw4.join(' ÷ ') : j.rd.aw + ' ' + (j.rd.op === '나눗셈' ? '÷' : j.rd.op) + ' ' + j.rd.bw) : filled(sh.s4.sub) ? '두 수를 못 읽음' : '—';
+  const fr = (a, b) => '<span class="fr"><span>' + escH(a) + '</span><span>' + escH(b) + '</span></span>';
+  const rd = j.rd ? (j.rd.raw4 ? fr(j.rd.raw4[0], j.rd.raw4[1]) + ' · ' + fr(j.rd.raw4[2], j.rd.raw4[3]) : j.rd.op === '나눗셈' ? fr(j.rd.aw, j.rd.bw) : escH(j.rd.aw + ' ' + j.rd.op + ' ' + j.rd.bw)) : filled(sh.s4.sub) ? '두 수를 못 읽음' : '—';
   const tm = k.answers.Tmin_screen.no_cat;
   const b4 = f => filled(sh.s4[f]) ? '' : no('빈 칸');
-  const e2 = (filled(sh.s4.formula) ? '' : tr('식', '—', b4('formula'))) + tr('대입의 두 수', escH(rd), b4('sub') || (!j.rd ? no('못 읽음') : '')) + tr('다시 계산한 값', j.recalc === null ? '—' : String(+j.recalc.toFixed(4)), '') + tr('내 답', my(sh.s4.ans), b4('ans'))
-    + tr('±2 % 안', j.recalc === null || !filled(sh.s4.ans) ? '—' : j.inRange ? yes('맞음') : no('틀림'), '') + (j.memo.length ? tr('메모', escH(j.memo.join(' · ')), '') : '')
+  const e2 = (filled(sh.s4.formula) ? '' : tr('식', '—', b4('formula'))) + tr('대입의 두 수', rd, j.memo.includes('식 칸의 대입 수로 봄') ? yes('식 칸에서 읽음') : b4('sub') || (!j.rd ? no('못 읽음') : '')) + tr('다시 계산한 값', j.recalc === null ? '—' : String(+j.recalc.toFixed(4)), '') + tr('내 답', my(sh.s4.ans), b4('ans'))
+    + tr('<span class="nw">±2 % 안</span>', j.recalc === null || !filled(sh.s4.ans) ? '—' : j.inRange ? yes('맞음') : no('틀림'), '') + (j.memo.length ? tr('메모', escH(j.memo.join(' · ')), '') : '')
     + tr('최저 온도(촉매 없음)', my(sh.s5.tminN), j.minN ? yes('맞음') : no(filled(sh.s5.tminN) ? '틀림' : '빈 칸') + ' · 화면 ' + shown(tm == null ? '없음' : tm + ' K'));
-  $('rc1').innerHTML = box('요소 1 · 틀린 수 E ' + j.E, '<div class="big1">판정: ' + escH(e1t) + '</div>') + box('[1] 반응 조건', '<table class="rt">' + s1 + '</table>') + box('[3] 그래프 표시 셋 · 높낮이', '<table class="rt">' + gm + '</table>');
+  $('rc1').innerHTML = box('요소 1 = [1]~[3] · 틀린 칸 ' + j.E, '<div class="big1">판정: ' + escH(e1t) + '</div>') + box('[1] 반응 조건', '<table class="rt">' + s1 + '</table>') + box('[3] 그래프 표시 셋 · 높낮이', '<table class="rt">' + gm + '</table>');
   $('rc2').innerHTML = box('[2] 기준 온도 측정값', '<table class="rt">' + s2 + '</table>');
-  $('rc3').innerHTML = box('요소 2 · 속도 증가비 · 최저 온도', '<table class="rt">' + e2 + '</table>')
+  $('rc3').innerHTML = box('요소 2 = [4] 속도 증가비 · [5] 최저 온도', '<table class="rt">' + e2 + '</table>')
     + '<p>· (가) 는 선생님이 읽고 판정함 · 연습 결과에 안 나옴</p>'
     + (rc === null ? '' : '<p>' + (rc ? '· 접수 ' + escH(rc) : '· 제출이 닿지 않음 · 결과는 그대로') + '</p>');
   ovl('sf', false); for (const b of ['calcbtn', 'home']) $(b).hidden = true; $('clock').textContent = '';
-  let rec = pfget(body.id);
-  if (!again || !rec) { rec = { id: body.id, n: (rec ? rec.n : 0) + 1, prevE: rec ? rec.E : null, E: j.E, key: k, marks: null }; pfput(rec); }
-  $('rcmp').textContent = rec.n > 1 ? ' · ' + rec.n + '번째 제출 · 틀린 수 E 지난번 ' + rec.prevE + ' → 이번 ' + rec.E : '';
   const nx = $('res').querySelectorAll('.no').length;
+  let rec = pfget(body.id);
+  if (!again || !rec) { rec = { id: body.id, n: (rec ? rec.n : 0) + 1, prevE: rec ? rec.E : null, E: nx, key: k, marks: null }; pfput(rec); }
   $('pfix').hidden = !nx; $('pnew').classList.toggle('go', !nx);
-  $('rtx').textContent = nx ? '틀린 칸을 고쳐 다시 내 볼 수 있음 · 새 조건으로 한 번 더 해 볼 수도 있음' : '틀린 칸 없음 · 새 조건으로 한 번 더 해 볼 수 있음';
+  $('rtx').textContent = nx ? '' : '틀린 칸 없음';
+  $('rcmp').textContent = rec.n > 1 ? (nx ? '' : ' · ') + rec.n + '번째 제출 · 틀린 칸 지난번 ' + rec.prevE + ' → 이번 ' + rec.E : '';
+  $('res').querySelector('.rtop').hidden = !$('rtx').textContent && !$('rcmp').textContent;
   $('lab').hidden = true; $('start').hidden = true; $('res').hidden = false; $(nx ? 'pfix' : 'pnew').focus(); ptodo();
 }
 function pclear() {
