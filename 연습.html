@@ -894,17 +894,22 @@ function grJudge(sub, k) {
     const { scr, mi, rev } = hit(rd);
     method = ['nB', 'above', 'frac'].find(m => scr[m]) || ['nB', 'frac'].find(m => mi[m]) || (rev ? (rd.raw4 ? 'frac' : 'nB') : null) || (basis.length === 1 ? basis[0] : null);
     viaScreen = !!['nB', 'above', 'frac'].find(m => scr[m]); viaMine = !!['nB', 'frac'].find(m => mi[m]);
-    if (rev && !viaScreen && !viaMine) memo.push('나누는 순서 반대');
-    if (method && !viaScreen && !viaMine && !rev) memo.push('대입 수가 [2] · 화면 값과 다름 · 교사 확인');
+    const back = rev || (rd.op === '나눗셈' && rd.a / rd.b < 1);
+    if (back && !viaScreen && !viaMine) memo.push('나누는 순서 반대');
+    if (method && !viaScreen && !viaMine && !back) memo.push('대입 수가 [2] · 화면 값과 다름 · 교사 확인');
     if (rd.op !== '나눗셈') memo.push('셈 기호: ' + rd.op);
     if (viaScreen) recalc = rd.a / rd.b;
     else if (method === 'nB') recalc = mine.nB ? mine.nB[0] / mine.nB[1] : null;
     else if (method === 'frac') recalc = mine.frac ? mine.frac[0] / mine.frac[1] : null;
-    else if (method === 'above') { recalc = rn.qC / rn.qN; memo.push('Ea 보다 큰 충돌 수가 정답표와 다름 → 단순 계산 오류로 봄'); }
-    if (recalc === null) teacher = !rev && (rd.op === '나눗셈' || rd.op === '모름');
+    else if (method === 'above') {
+      const far = r => Math.abs(rd.a - r.qC) / r.qC + Math.abs(rd.b - r.qN) / r.qN, q = !rd.raw4 && far(rc) < far(rn) ? rc : rn;
+      recalc = q.qC / q.qN;
+      if (!back) memo.push('Ea 보다 큰 충돌 수가 정답표와 다름 · 교사 확인');
+    }
+    if (recalc === null) teacher = !back && (rd.op === '나눗셈' || rd.op === '모름');
   } else if (!noSub) teacher = true;
   const inRange = recalc !== null && ans !== null && ans / recalc >= 0.98 - 1e-12 && ans / recalc <= 1.02 + 1e-12;
-  const calcOK = !teacher && inRange && rd && rd.op === '나눗셈' && !(method === 'above' && !viaScreen) && !memo.includes('나누는 순서 반대');
+  const calcOK = !teacher && inRange && rd && rd.op === '나눗셈' && !memo.includes('나누는 순서 반대');
   const minN = grSame(grNum(s5.tminN), k.answers.Tmin_screen.no_cat), minC = grSame(grNum(s5.tminC), k.answers.Tmin_screen.cat), nMin = minN + minC;
   const s45blank = ['formula', 'sub', 'ans'].every(f => grBlank(s4[f])) && !basis.length && Object.values(s5).every(v => (v && typeof v === 'object') ? Object.values(v).every(grBlank) : grBlank(v));
   const e2 = s45blank ? '하 10 (요소 2 통째 빈)' : !hasProc && !ansProc ? '하 10 (계산 과정 없음)' : nMin === 0 ? '하 10 (최저 온도 둘 다 틀림)' : nMin === 1 || noF ? '중 20'
